@@ -1,0 +1,8 @@
+{
+  "version": "2.1.1",
+  "name": "DhirDhar Solution v2.1.1",
+  "releaseDate": "2026-08-31",
+  "downloadUrl": "https://github.com/bhargav1822/DhirDhar-Releases/releases/download/v2.1.1/DhirDhar-2.1.1-x64-Setup.exe",
+  "sha256": "C0EC13E11ECF4C099AFDBB254D413D3ABA09BCB54C0A060FDB6377716535AC66",
+  "changelog": "DhirDhar Solution v2.1.1 Release Notes:\n\n### Dashboard\n- Outstanding Overview calculated strictly year-wise for the selected year.\n- Opening, New Loans, Payments, and Closing isolated for the selected year.\n- Zero-transaction years display strictly ₹0.00 for all cards and zero-height bars across all 12 months.\n- Interest calculated for ACTIVE borrowers only using authoritative interest engine.\n- Increased chart scale support up to ₹10,00,000 (10 Lakh).\n- Four grouped vertical bars per month (New Loans = Orange, Withdrawals = Red, Deposits = Green, Interest Earned = Blue).\n\n### Year Selector & Live Update\n- Seamless single year selector.\n- Real-time updates without application restart.\n\n### Installer\n- Windows x64 production installer: DhirDhar-2.1.1-x64-Setup.exe.\n- Version 2.1.1."
+}

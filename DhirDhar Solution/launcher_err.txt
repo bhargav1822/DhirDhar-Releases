@@ -1,0 +1,6 @@
+
+RESOLVE: System.Runtime.CompilerServices.Unsafe, Version=4.0.4.1, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a
+RESOLVE: XamlCompiler.resources, Version=3.0.0.2404, Culture=en-US, PublicKeyToken=de31ebe4ad15742b
+RESOLVE: XamlCompiler.resources, Version=3.0.0.2404, Culture=en-US, PublicKeyToken=de31ebe4ad15742b
+RESOLVE: XamlCompiler.resources, Version=3.0.0.2404, Culture=en, PublicKeyToken=de31ebe4ad15742b
+RESOLVE: XamlCompiler.resources, Version=3.0.0.2404, Culture=en, PublicKeyToken=de31ebe4ad15742b

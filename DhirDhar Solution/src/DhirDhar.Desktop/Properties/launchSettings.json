@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "DhirDhar.Desktop": {
+      "commandName": "Project",
+      "nativeDebugging": false
+    }
+  }
+}

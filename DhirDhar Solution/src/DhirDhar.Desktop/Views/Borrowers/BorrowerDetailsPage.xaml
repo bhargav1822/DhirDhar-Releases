@@ -1,0 +1,647 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Page
+    x:Class="DhirDhar.Desktop.Views.Borrowers.BorrowerDetailsPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:converters="using:DhirDhar.Desktop.Converters"
+    xmlns:helpers="using:DhirDhar.Desktop.Helpers"
+    xmlns:controls="using:DhirDhar.Desktop.Controls"
+    Background="{ThemeResource ApplicationBackgroundBrush}">
+
+    <Page.Resources>
+        <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
+        <converters:InverseBoolToVisibilityConverter x:Key="InverseBoolToVisibilityConverter" />
+        <converters:BoolToTabBackgroundConverter x:Key="BoolToTabBackgroundConverter" />
+        <converters:BoolToTabForegroundConverter x:Key="BoolToTabForegroundConverter" />
+        <converters:BoolToTabBorderBrushConverter x:Key="BoolToTabBorderBrushConverter" />
+        <converters:DashToSubtleBrushConverter x:Key="DashToSubtleBrushConverter" />
+        <converters:StatusToBrushConverter x:Key="StatusToBrushConverter" />
+
+        <Style x:Key="HeaderActionButtonStyle" TargetType="Button">
+            <Setter Property="Background" Value="{ThemeResource SurfaceBackgroundBrush}" />
+            <Setter Property="BorderBrush" Value="{ThemeResource BorderBrush}" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="CornerRadius" Value="8" />
+            <Setter Property="Padding" Value="12,8" />
+            <Setter Property="FontSize" Value="13" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+        </Style>
+
+        <Style x:Key="HeaderPrimaryActionButtonStyle" TargetType="Button">
+            <Setter Property="Background" Value="{ThemeResource PrimaryBrush}" />
+            <Setter Property="Foreground" Value="{ThemeResource PrimaryForegroundBrush}" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="CornerRadius" Value="8" />
+            <Setter Property="Padding" Value="14,8" />
+            <Setter Property="FontSize" Value="13" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+        </Style>
+    </Page.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <ScrollViewer VerticalScrollBarVisibility="Auto" VerticalScrollMode="Enabled">
+            <Grid Padding="28,28,28,28" RowSpacing="20">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+
+                <!-- Page Header: Back Button, Full Name, Borrower Number, Quick Actions -->
+                <Grid Grid.Row="0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+
+                    <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="16" VerticalAlignment="Center">
+                        <!-- Header Back Button -->
+                        <Button Width="40" Height="40" CornerRadius="8" Background="{ThemeResource SurfaceBackgroundBrush}" BorderBrush="{ThemeResource BorderBrush}" BorderThickness="1" Command="{Binding BackCommand, Mode=OneWay}" ToolTipService.ToolTip="{Binding BackLabel, Mode=OneWay}">
+                            <FontIcon Glyph="&#xE72B;" FontSize="16" Foreground="{ThemeResource SubtleForegroundBrush}" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        </Button>
+
+                        <StackPanel Spacing="4" VerticalAlignment="Center">
+                            <StackPanel Orientation="Horizontal" Spacing="12">
+                                <TextBlock Text="{Binding FullName, Mode=OneWay}" FontSize="24" FontWeight="SemiBold" VerticalAlignment="Center" Foreground="{ThemeResource ApplicationForegroundBrush}" />
+                                <Border Background="{ThemeResource PrimaryBrush}" Opacity="0.1" CornerRadius="4" Padding="8,2" VerticalAlignment="Center">
+                                    <TextBlock Text="{Binding BorrowerNumber, Mode=OneWay}" FontSize="12" FontWeight="SemiBold" Foreground="{ThemeResource PrimaryBrush}" />
+                                </Border>
+                            </StackPanel>
+                        </StackPanel>
+                    </StackPanel>
+
+                    <!-- Quick Actions -->
+                    <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
+                        <Button Style="{StaticResource HeaderActionButtonStyle}" Command="{Binding PrintStatementCommand, Mode=OneWay}" ToolTipService.ToolTip="{Binding PrintStatementLabel, Mode=OneWay}">
+                            <StackPanel Orientation="Horizontal" Spacing="6">
+                                <FontIcon Glyph="&#xE749;" FontSize="14" />
+                                <TextBlock Text="{Binding PrintStatementLabel, Mode=OneWay}" />
+                            </StackPanel>
+                        </Button>
+                        <Button Content="{Binding EditBorrowerLabel, Mode=OneWay}" Style="{StaticResource EditActionButtonStyle}" Command="{Binding EditBorrowerCommand, Mode=OneWay}" />
+                        <Button Content="{Binding ReceiveAmountLabel, Mode=OneWay}" Style="{StaticResource ReceiveActionButtonStyle}" Command="{Binding ReceiveAmountCommand, Mode=OneWay}" Visibility="{Binding IsClosed, Mode=OneWay, Converter={StaticResource InverseBoolToVisibilityConverter}}" />
+                        <Button Content="{Binding GiveAmountLabel, Mode=OneWay}" Style="{StaticResource GiveActionButtonStyle}" Command="{Binding GiveAmountCommand, Mode=OneWay}" Visibility="{Binding IsClosed, Mode=OneWay, Converter={StaticResource InverseBoolToVisibilityConverter}}" />
+                        <Button Content="{Binding CloseAccountLabel, Mode=OneWay}" Style="{StaticResource CloseActionButtonStyle}" Command="{Binding OpenCloseAccountDialogCommand, Mode=OneWay}" Visibility="{Binding IsClosed, Mode=OneWay, Converter={StaticResource InverseBoolToVisibilityConverter}}" />
+                    </StackPanel>
+                </Grid>
+
+                <!-- Loading Indicator -->
+                <ProgressRing Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="64" IsActive="{Binding IsLoading, Mode=OneWay}" Visibility="{Binding IsLoading, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}" />
+
+                <!-- Error Banner -->
+                <Grid Grid.Row="1" Visibility="{Binding HasError, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}">
+                    <Border Background="{ThemeResource SurfaceBackgroundBrush}" BorderBrush="{ThemeResource BorderBrush}" BorderThickness="1" CornerRadius="12" Padding="32" HorizontalAlignment="Center" VerticalAlignment="Center">
+                        <StackPanel Spacing="16" HorizontalAlignment="Center">
+                            <FontIcon Glyph="&#xEA39;" Foreground="{ThemeResource ErrorBrush}" FontSize="32" />
+                            <TextBlock Text="{Binding ErrorMessage, Mode=OneWay}" FontSize="15" Foreground="{ThemeResource ErrorBrush}" HorizontalAlignment="Center" />
+                            <Button Content="{Binding RetryLabel, Mode=OneWay}" Style="{StaticResource HeaderPrimaryActionButtonStyle}" Command="{Binding RetryCommand, Mode=OneWay}" HorizontalAlignment="Center" />
+                        </StackPanel>
+                    </Border>
+                </Grid>
+
+                <!-- Loaded Main View -->
+                <Grid Grid.Row="1" RowSpacing="20" Visibility="{Binding IsLoading, Mode=OneWay, Converter={StaticResource InverseBoolToVisibilityConverter}}">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+
+                    <!-- 1. Borrower Profile Card -->
+                    <Border Grid.Row="0" Background="{ThemeResource SurfaceBackgroundBrush}" BorderBrush="{ThemeResource BorderBrush}" BorderThickness="1" CornerRadius="12" Padding="20">
+                        <Grid RowSpacing="14">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+
+                            <TextBlock Grid.Row="0" Text="{Binding BorrowerProfileLabel, Mode=OneWay}" FontSize="15" FontWeight="SemiBold" Foreground="{ThemeResource ApplicationForegroundBrush}" />
+
+                            <Grid Grid.Row="1" ColumnSpacing="24">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+
+                                <!-- Profile Fields Grid (Left / Middle) -->
+                                <Grid Grid.Column="0" ColumnSpacing="20" RowSpacing="14" VerticalAlignment="Top">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                    </Grid.RowDefinitions>
+
+                                     <!-- Row 0: Full Name & Village -->
+                                    <StackPanel Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="0" Spacing="2">
+                                        <TextBlock Text="{Binding FullNameLabel, Mode=OneWay}" FontSize="11" Foreground="{ThemeResource SubtleForegroundBrush}" />
+                                        <TextBlock Text="{Binding FullName, Mode=OneWay}" FontSize="13" FontWeight="SemiBold" Foreground="{ThemeResource ApplicationForegroundBrush}" />
+                                    </StackPanel>
+
+                                    <StackPanel Grid.Column="2" Grid.Row="0" Spacing="2">
+                                        <TextBlock Text="{Binding VillageLabel, Mode=OneWay}" FontSize="11" Foreground="{ThemeResource SubtleForegroundBrush}" />
+                                        <TextBlock Text="{Binding Village, Mode=OneWay}" FontSize="13" FontWeight="Medium" Foreground="{ThemeResource ApplicationForegroundBrush}" />
+                                    </StackPanel>
+
+                                    <!-- Row 1: Contact, Identity & Account Info -->
+                                    <StackPanel Grid.Column="0" Grid.Row="1" Spacing="2">
+                                        <TextBlock Text="{Binding MobileNumberLabel, Mode=OneWay}" FontSize="11" Foreground="{ThemeResource SubtleForegroundBrush}" />
+                                        <TextBlock Text="{Binding BorrowerPhone, Mode=OneWay}" FontSize="13" FontWeight="Medium" Foreground="{ThemeResource ApplicationForegroundBrush}" />
+                                    </StackPanel>
+
+                                    <StackPanel Grid.Column="1" Grid.Row="1" Spacing="2">
+                                        <TextBlock Text="{Binding AadharNumberLabel, Mode=OneWay}" FontSize="11" Foreground="{ThemeResource SubtleForegroundBrush}" />
+                                        <TextBlock Text="{Binding MaskedAadharNumber, Mode=OneWay}" FontSize="13" FontWeight="Medium" Foreground="{ThemeResource ApplicationForegroundBrush}" />
+                                    </StackPanel>
+
+                                    <StackPanel Grid.Column="2" Grid.Row="1" Spacing="2">
+                                        <TextBlock Text="{Binding BorrowerNumberLabel, Mode=OneWay}" FontSize="11" Foreground="{ThemeResource SubtleForegroundBrush}" />
+                                        <TextBlock Text="{Binding BorrowerNumber, Mode=OneWay}" FontSize="13" FontWeight="Medium" Foreground="{ThemeResource ApplicationForegroundBrush}" />
+                                    </StackPanel>
+
+                                    <!-- Row 2: Status -->
+                                    <StackPanel Grid.Column="0" Grid.Row="2" Spacing="2">
+                                        <TextBlock Text="{Binding AccountStatusLabel, Mode=OneWay}" FontSize="11" Foreground="{ThemeResource SubtleForegroundBrush}" />
+                                        <TextBlock Text="{Binding BorrowerStatus, Mode=OneWay}" FontSize="13" FontWeight="SemiBold" Foreground="{Binding BorrowerStatusBrushValue, Mode=OneWay, Converter={StaticResource StatusToBrushConverter}}" />
+                                    </StackPanel>
+                                </Grid>
+
+                                 <!-- Borrower Photo Section (Far RIGHT, matching Ornament Photo container) -->
+                                <StackPanel Grid.Column="1" Spacing="6" VerticalAlignment="Top">
+                                    <TextBlock Text="{Binding BorrowerPhotoLabel, Mode=OneWay}" FontSize="11" FontWeight="SemiBold" Foreground="{ThemeResource SubtleForegroundBrush}" />
+
+                                    <Border Width="320" Height="200" Background="{ThemeResource ApplicationBackgroundBrush}" BorderBrush="{ThemeResource BorderBrush}" BorderThickness="1" CornerRadius="10">
+                                        <Grid>
+                                            <!-- Fallback Placeholder -->
+                                            <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Spacing="6" Visibility="{Binding HasBorrowerPhoto, Mode=OneWay, Converter={StaticResource InverseBoolToVisibilityConverter}}">
+                                                <FontIcon Glyph="&#xE77B;" FontSize="28" Foreground="{ThemeResource SubtleForegroundBrush}" />
+                                                <TextBlock Text="{Binding NoBorrowerPhotoLabel, Mode=OneWay}" FontSize="12" Foreground="{ThemeResource SubtleForegroundBrush}" />
+                                            </StackPanel>
+                                            <!-- Saved Borrower Photo -->
+                                            <Image Source="{Binding BorrowerPhotoPreview, Mode=OneWay}" Stretch="UniformToFill" Visibility="{Binding HasBorrowerPhoto, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}" />
+                                        </Grid>
+                                    </Border>
+                                </StackPanel>
+                            </Grid>
+
+                            <!-- Full-width Account Closed Status Separator Line (Shown only when CLOSED) -->
+                            <Border Grid.Row="2" Margin="0,6,0,0" Padding="0,8" HorizontalAlignment="Stretch" Visibility="{Binding IsClosed, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}">
+                                <TextBlock Text="{Binding AccountClosedSeparatorText, Mode=OneWay}" FontSize="13" FontWeight="SemiBold" Foreground="{ThemeResource ErrorBrush}" HorizontalAlignment="Center" TextAlignment="Center" />
+                            </Border>
+                        </Grid>
+                    </Border>
+
+                    <!-- 2. Loan & Security Details Card -->
+                    <Border Grid.Row="1" Background="{ThemeResource SurfaceBackgroundBrush}" BorderBrush="{ThemeResource BorderBrush}" BorderThickness="1" CornerRadius="12" Padding="20">
+                        <Grid RowSpacing="14">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+
+                            <TextBlock Grid.Row="0" Text="{Binding LoanSecurityDetailsLabel, Mode=OneWay}" FontSize="15" FontWeight="SemiBold" />
+
+                            <Grid Grid.Row="1" ColumnSpacing="24">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+
+                                <!-- Loan Details Columns -->
+                                <Grid Grid.Column="0" ColumnSpacing="20" RowSpacing="14" VerticalAlignment="Top">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                    </Grid.RowDefinitions>
+
+                                    <!-- Row 0: Basic Loan Info -->
+                                    <StackPanel Grid.Column="0" Grid.Row="0" Spacing="2">
+                                        <TextBlock Text="{Binding LoanTypeLabel, Mode=OneWay}" FontSize="11" Foreground="{ThemeResource SubtleForegroundBrush}" />
+                                        <TextBlock Text="{Binding DisplayLoanType, Mode=OneWay}" FontSize="14" FontWeight="SemiBold" Foreground="{ThemeResource PrimaryBrush}" />
+                                    </StackPanel>
+
+                                    <StackPanel Grid.Column="1" Grid.Row="0" Spacing="2">
+                                        <TextBlock Text="{Binding LoanAmountLabel, Mode=OneWay}" FontSize="11" Foreground="{ThemeResource SubtleForegroundBrush}" />
+                                        <TextBlock Text="{Binding DisplayLoanAmount, Mode=OneWay}" FontSize="13" FontWeight="SemiBold" Foreground="{ThemeResource SuccessBrush}" />
+                                    </StackPanel>
+
+                                    <StackPanel Grid.Column="2" Grid.Row="0" Spacing="2">
+                                        <TextBlock Text="{Binding LoanDateLabel, Mode=OneWay}" FontSize="11" Foreground="{ThemeResource SubtleForegroundBrush}" />
+                                        <TextBlock Text="{Binding DisplayLoanDate, Mode=OneWay}" FontSize="13" FontWeight="Medium" />
+                                    </StackPanel>
+
+                                    <!-- Row 1: Interest Rate & Duration Metrics -->
+                                    <StackPanel Grid.Column="0" Grid.Row="1" Spacing="2">
+                                        <TextBlock Text="{Binding InterestRateLabel, Mode=OneWay}" FontSize="11" Foreground="{ThemeResource SubtleForegroundBrush}" />
+                                        <TextBlock Text="{Binding DisplayMonthlyInterestRate, Mode=OneWay}" FontSize="13" FontWeight="SemiBold" Foreground="{ThemeResource PrimaryBrush}" />
+                                    </StackPanel>
+
+                                    <StackPanel Grid.Column="1" Grid.Row="1" Spacing="2">
+                                        <TextBlock Text="{Binding BorrowerDurationLabel, Mode=OneWay}" FontSize="11" Foreground="{ThemeResource SubtleForegroundBrush}" />
+                                        <TextBlock Text="{Binding DisplayBorrowerDuration, Mode=OneWay}" FontSize="13" FontWeight="SemiBold" />
+                                    </StackPanel>
+
+                                    <StackPanel Grid.Column="2" Grid.Row="1" Spacing="2">
+                                        <TextBlock Text="{Binding MonthlyInterestLabel, Mode=OneWay}" FontSize="11" Foreground="{ThemeResource SubtleForegroundBrush}" />
+                                        <TextBlock Text="{Binding DisplayMonthlyInterest, Mode=OneWay}" FontSize="13" FontWeight="SemiBold" Foreground="{ThemeResource PrimaryBrush}" />
+                                    </StackPanel>
+
+                                    <!-- Row 2: Security / Ornament Info -->
+                                    <StackPanel Grid.Column="0" Grid.Row="2" Spacing="2">
+                                        <TextBlock Text="{Binding OrnamentTypeLabel, Mode=OneWay}" FontSize="11" Foreground="{ThemeResource SubtleForegroundBrush}" />
+                                        <TextBlock Text="{Binding DisplayOrnamentType, Mode=OneWay}" FontSize="13" FontWeight="Medium" />
+                                    </StackPanel>
+
+                                    <StackPanel Grid.Column="1" Grid.Row="2" Spacing="2">
+                                        <TextBlock Text="{Binding OrnamentWeightLabel, Mode=OneWay}" FontSize="11" Foreground="{ThemeResource SubtleForegroundBrush}" />
+                                        <TextBlock Text="{Binding DisplayOrnamentWeight, Mode=OneWay}" FontSize="13" FontWeight="Medium" />
+                                    </StackPanel>
+                                </Grid>
+
+                                <!-- Ornament Photo Section (For Gold/Silver Borrowers) -->
+                                <StackPanel Grid.Column="1" Spacing="6" Visibility="{Binding IsOrnamentSectionVisible, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}" VerticalAlignment="Top">
+                                    <TextBlock Text="{Binding OrnamentPhotoLabel, Mode=OneWay}" FontSize="11" FontWeight="SemiBold" Foreground="{ThemeResource SubtleForegroundBrush}" />
+
+                                    <Border Width="320" Height="200" Background="{ThemeResource ApplicationBackgroundBrush}" BorderBrush="{ThemeResource BorderBrush}" BorderThickness="1" CornerRadius="10">
+                                        <Grid>
+                                            <!-- No Ornament Photo State -->
+                                            <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Spacing="6" Visibility="{Binding HasOrnamentPhoto, Mode=OneWay, Converter={StaticResource InverseBoolToVisibilityConverter}}">
+                                                <FontIcon Glyph="&#xE8B9;" FontSize="28" Foreground="{ThemeResource SubtleForegroundBrush}" />
+                                                <TextBlock Text="{Binding NoOrnamentPhotoLabel, Mode=OneWay}" FontSize="12" Foreground="{ThemeResource SubtleForegroundBrush}" />
+                                            </StackPanel>
+
+                                            <!-- Display Saved Ornament Photo -->
+                                            <Image Source="{Binding OrnamentPhotoPreview, Mode=OneWay}" Stretch="UniformToFill" Visibility="{Binding HasOrnamentPhoto, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}" />
+                                        </Grid>
+                                     </Border>
+                                </StackPanel>
+                            </Grid>
+                        </Grid>
+                    </Border>
+
+                    <!-- 3. Account QR Card -->
+                    <Border Grid.Row="2" Background="{ThemeResource SurfaceBackgroundBrush}" BorderBrush="{ThemeResource BorderBrush}" BorderThickness="1" CornerRadius="12" Padding="20">
+                        <Grid RowSpacing="14">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+
+                            <TextBlock Grid.Row="0" Text="{Binding AccountQrLabel, Mode=OneWay}" FontSize="15" FontWeight="SemiBold" Foreground="{ThemeResource ApplicationForegroundBrush}" />
+
+                            <Grid Grid.Row="1" ColumnSpacing="24">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+
+                                <!-- QR Code Preview Image Box -->
+                                <Border Grid.Column="0" Width="140" Height="140" Background="White" BorderBrush="{ThemeResource BorderBrush}" BorderThickness="1" CornerRadius="8" Padding="6">
+                                    <Image Source="{Binding QrCodeImage, Mode=OneWay}" Stretch="Uniform" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                </Border>
+
+                                <!-- Account Details & Actions -->
+                                <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="14">
+                                    <StackPanel Spacing="2">
+                                        <TextBlock Text="{Binding BorrowerNumberLabel, Mode=OneWay}" FontSize="11" Foreground="{ThemeResource SubtleForegroundBrush}" />
+                                        <TextBlock Text="{Binding FormattedBorrowerNumber, Mode=OneWay}" FontSize="16" FontWeight="SemiBold" Foreground="{ThemeResource PrimaryBrush}" />
+                                    </StackPanel>
+
+                                    <StackPanel Orientation="Horizontal" Spacing="10">
+                                        <Button Style="{StaticResource HeaderActionButtonStyle}" Command="{Binding SaveQrCommand, Mode=OneWay}">
+                                            <StackPanel Orientation="Horizontal" Spacing="6">
+                                                <FontIcon Glyph="&#xE74E;" FontSize="14" />
+                                                <TextBlock Text="{Binding SaveQrLabel, Mode=OneWay}" />
+                                            </StackPanel>
+                                        </Button>
+                                        <Button Style="{StaticResource HeaderActionButtonStyle}" Command="{Binding PrintQrCommand, Mode=OneWay}">
+                                            <StackPanel Orientation="Horizontal" Spacing="6">
+                                                <FontIcon Glyph="&#xE749;" FontSize="14" />
+                                                <TextBlock Text="{Binding PrintQrLabel, Mode=OneWay}" />
+                                            </StackPanel>
+                                        </Button>
+                                    </StackPanel>
+                                </StackPanel>
+                            </Grid>
+                        </Grid>
+                    </Border>
+
+                    <!-- 4. Main Prominent Total Outstanding Card -->
+                    <Border Grid.Row="3" Background="{ThemeResource SurfaceBackgroundBrush}" BorderBrush="{ThemeResource PrimaryBrush}" BorderThickness="1.5" CornerRadius="12" Padding="24">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+
+                            <StackPanel Grid.Column="0" Spacing="6" VerticalAlignment="Center">
+                                <TextBlock Text="{Binding TotalOutstandingBalanceLabel, Mode=OneWay}" FontSize="13" FontWeight="Medium" Foreground="{ThemeResource SubtleForegroundBrush}" />
+                                <TextBlock Text="{Binding FormattedTotalOutstanding, Mode=OneWay}" FontSize="32" FontWeight="Bold" Foreground="{ThemeResource SuccessBrush}" />
+                            </StackPanel>
+
+                            <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="24" VerticalAlignment="Center">
+                                <Border Background="{ThemeResource ApplicationBackgroundBrush}" CornerRadius="8" Padding="16,12">
+                                    <StackPanel Spacing="4">
+                                        <TextBlock Text="{Binding PrincipalBalanceLabel, Mode=OneWay}" FontSize="11" Foreground="{ThemeResource SubtleForegroundBrush}" />
+                                        <TextBlock Text="{Binding FormattedOutstandingPrincipal, Mode=OneWay}" FontSize="18" FontWeight="SemiBold" Foreground="{ThemeResource SuccessBrush}" />
+                                    </StackPanel>
+                                </Border>
+                                <Border Background="{ThemeResource ApplicationBackgroundBrush}" CornerRadius="8" Padding="16,12">
+                                    <StackPanel Spacing="4">
+                                        <TextBlock Text="{Binding AccruedInterestLabel, Mode=OneWay}" FontSize="11" Foreground="{ThemeResource SubtleForegroundBrush}" />
+                                        <TextBlock Text="{Binding FormattedOutstandingInterest, Mode=OneWay}" FontSize="18" FontWeight="SemiBold" Foreground="{ThemeResource PrimaryBrush}" />
+                                    </StackPanel>
+                                </Border>
+                            </StackPanel>
+                        </Grid>
+                    </Border>
+
+                    <!-- 5. Financial Summary Grid Cards -->
+                    <Grid Grid.Row="4" ColumnSpacing="16">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+
+                        <!-- Total Given / Loans -->
+                        <Border Grid.Column="0" Background="{ThemeResource SurfaceBackgroundBrush}" BorderBrush="{ThemeResource BorderBrush}" BorderThickness="1" CornerRadius="12" Padding="18">
+                            <StackPanel Spacing="6">
+                                <TextBlock Text="{Binding TotalGivenLabel, Mode=OneWay}" FontSize="12" Foreground="{ThemeResource SubtleForegroundBrush}" />
+                                <TextBlock Text="{Binding FormattedTotalGiven, Mode=OneWay}" FontSize="20" FontWeight="SemiBold" Foreground="{ThemeResource ErrorBrush}" />
+                            </StackPanel>
+                        </Border>
+
+                        <!-- Total Received / Deposits -->
+                        <Border Grid.Column="1" Background="{ThemeResource SurfaceBackgroundBrush}" BorderBrush="{ThemeResource BorderBrush}" BorderThickness="1" CornerRadius="12" Padding="18">
+                            <StackPanel Spacing="6">
+                                <TextBlock Text="{Binding TotalReceivedLabel, Mode=OneWay}" FontSize="12" Foreground="{ThemeResource SubtleForegroundBrush}" />
+                                <TextBlock Text="{Binding FormattedTotalReceived, Mode=OneWay}" FontSize="20" FontWeight="SemiBold" Foreground="{ThemeResource SuccessBrush}" />
+                            </StackPanel>
+                        </Border>
+
+                        <!-- Total Interest Accrued -->
+                        <Border Grid.Column="2" Background="{ThemeResource SurfaceBackgroundBrush}" BorderBrush="{ThemeResource BorderBrush}" BorderThickness="1" CornerRadius="12" Padding="18">
+                            <StackPanel Spacing="6">
+                                <TextBlock Text="{Binding InterestAccruedLabel, Mode=OneWay}" FontSize="12" Foreground="{ThemeResource SubtleForegroundBrush}" />
+                                <TextBlock Text="{Binding FormattedTotalInterest, Mode=OneWay}" FontSize="20" FontWeight="SemiBold" Foreground="{ThemeResource PrimaryBrush}" />
+                            </StackPanel>
+                        </Border>
+
+                        <!-- Account Status -->
+                        <Border Grid.Column="3" Background="{ThemeResource SurfaceBackgroundBrush}" BorderBrush="{ThemeResource BorderBrush}" BorderThickness="1" CornerRadius="12" Padding="18">
+                            <StackPanel Spacing="6">
+                                <TextBlock Text="{Binding AccountStatusLabel, Mode=OneWay}" FontSize="12" Foreground="{ThemeResource SubtleForegroundBrush}" />
+                                <TextBlock Text="{Binding BorrowerStatus, Mode=OneWay}" FontSize="20" FontWeight="SemiBold" Foreground="{Binding BorrowerStatusBrushValue, Mode=OneWay, Converter={StaticResource StatusToBrushConverter}}" />
+                            </StackPanel>
+                        </Border>
+                    </Grid>
+
+                    <!-- 6. Complete Transaction History / Financial Statement -->
+                    <Border Grid.Row="5" Background="{ThemeResource SurfaceBackgroundBrush}" BorderBrush="{ThemeResource BorderBrush}" BorderThickness="1" CornerRadius="12" Padding="20">
+                        <Grid RowSpacing="16">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+
+                            <Grid Grid.Row="0">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <StackPanel Grid.Column="0" Spacing="2">
+                                    <TextBlock Text="{Binding CompleteHistoryLabel, Mode=OneWay}" FontSize="16" FontWeight="SemiBold" />
+                                    <TextBlock Text="{Binding HistorySubtitleLabel, Mode=OneWay}" FontSize="12" Foreground="{ThemeResource SubtleForegroundBrush}" />
+                                </StackPanel>
+
+                                 <!-- Type Filter Tabs -->
+                                <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+                                    <Button Content="{Binding AllLabel, Mode=OneWay}"
+                                            Command="{Binding FilterAllCommand, Mode=OneWay}"
+                                            Background="{Binding IsAllSelected, Mode=OneWay, Converter={StaticResource BoolToTabBackgroundConverter}}"
+                                            Foreground="{Binding IsAllSelected, Mode=OneWay, Converter={StaticResource BoolToTabForegroundConverter}}"
+                                            BorderBrush="{Binding IsAllSelected, Mode=OneWay, Converter={StaticResource BoolToTabBorderBrushConverter}}"
+                                            BorderThickness="1"
+                                            CornerRadius="8"
+                                            Padding="14,6"
+                                            FontSize="13"
+                                            FontWeight="SemiBold" />
+
+                                    <Button Content="{Binding GivenLabel, Mode=OneWay}"
+                                            Command="{Binding FilterGivenCommand, Mode=OneWay}"
+                                            Background="{Binding IsGivenSelected, Mode=OneWay, Converter={StaticResource BoolToTabBackgroundConverter}}"
+                                            Foreground="{Binding IsGivenSelected, Mode=OneWay, Converter={StaticResource BoolToTabForegroundConverter}}"
+                                            BorderBrush="{Binding IsGivenSelected, Mode=OneWay, Converter={StaticResource BoolToTabBorderBrushConverter}}"
+                                            BorderThickness="1"
+                                            CornerRadius="8"
+                                            Padding="14,6"
+                                            FontSize="13"
+                                            FontWeight="SemiBold" />
+
+                                    <Button Content="{Binding ReceivedLabel, Mode=OneWay}"
+                                            Command="{Binding FilterReceivedCommand, Mode=OneWay}"
+                                            Background="{Binding IsReceivedSelected, Mode=OneWay, Converter={StaticResource BoolToTabBackgroundConverter}}"
+                                            Foreground="{Binding IsReceivedSelected, Mode=OneWay, Converter={StaticResource BoolToTabForegroundConverter}}"
+                                            BorderBrush="{Binding IsReceivedSelected, Mode=OneWay, Converter={StaticResource BoolToTabBorderBrushConverter}}"
+                                            BorderThickness="1"
+                                            CornerRadius="8"
+                                            Padding="14,6"
+                                            FontSize="13"
+                                            FontWeight="SemiBold" />
+
+                                    <Button Content="{Binding InterestLabel, Mode=OneWay}"
+                                            Command="{Binding FilterInterestCommand, Mode=OneWay}"
+                                            Background="{Binding IsInterestSelected, Mode=OneWay, Converter={StaticResource BoolToTabBackgroundConverter}}"
+                                            Foreground="{Binding IsInterestSelected, Mode=OneWay, Converter={StaticResource BoolToTabForegroundConverter}}"
+                                            BorderBrush="{Binding IsInterestSelected, Mode=OneWay, Converter={StaticResource BoolToTabBorderBrushConverter}}"
+                                            BorderThickness="1"
+                                            CornerRadius="8"
+                                            Padding="14,6"
+                                            FontSize="13"
+                                            FontWeight="SemiBold" />
+                                </StackPanel>
+                            </Grid>
+
+                            <!-- Empty State & Statement Table Grid -->
+                            <Grid Grid.Row="1">
+                                <!-- Empty State -->
+                                <TextBlock Text="{Binding NoTransactionsLabel, Mode=OneWay}" FontSize="14" Foreground="{ThemeResource SubtleForegroundBrush}" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="48" Visibility="{Binding HasNoStatementRows, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}" />
+
+                                <!-- Statement Table -->
+                                <StackPanel Visibility="{Binding HasStatementRows, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}">
+                                    <!-- Table Header -->
+                                    <Grid Padding="12,8" Background="{ThemeResource ApplicationBackgroundBrush}" CornerRadius="6" ColumnSpacing="12" Margin="0,0,0,8">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="120" />
+                                            <ColumnDefinition Width="140" />
+                                            <ColumnDefinition Width="140" />
+                                            <ColumnDefinition Width="140" />
+                                            <ColumnDefinition Width="100" />
+                                            <ColumnDefinition Width="*" />
+                                        </Grid.ColumnDefinitions>
+                                         <TextBlock Grid.Column="0" Text="{Binding DateHeaderLabel, Mode=OneWay}" FontSize="12" FontWeight="SemiBold" Foreground="{ThemeResource SubtleForegroundBrush}" HorizontalAlignment="Left" />
+                                        <TextBlock Grid.Column="1" Text="{Binding WithdrawalHeaderLabel, Mode=OneWay}" FontSize="12" FontWeight="SemiBold" Foreground="{ThemeResource SubtleForegroundBrush}" HorizontalAlignment="Right" />
+                                        <TextBlock Grid.Column="2" Text="{Binding DepositHeaderLabel, Mode=OneWay}" FontSize="12" FontWeight="SemiBold" Foreground="{ThemeResource SubtleForegroundBrush}" HorizontalAlignment="Right" />
+                                        <TextBlock Grid.Column="3" Text="{Binding InterestHeaderLabel, Mode=OneWay}" FontSize="12" FontWeight="SemiBold" Foreground="{ThemeResource SubtleForegroundBrush}" HorizontalAlignment="Right" />
+                                        <TextBlock Grid.Column="4" Text="{Binding PercentHeaderLabel, Mode=OneWay}" FontSize="12" FontWeight="SemiBold" Foreground="{ThemeResource SubtleForegroundBrush}" HorizontalAlignment="Center" />
+                                        <TextBlock Grid.Column="5" Text="{Binding RunningBalanceHeaderLabel, Mode=OneWay}" FontSize="12" FontWeight="SemiBold" Foreground="{ThemeResource SubtleForegroundBrush}" HorizontalAlignment="Right" />
+                                    </Grid>
+
+                                    <!-- ItemsControl for Statement Rows -->
+                                    <ItemsControl ItemsSource="{Binding DisplayStatementRows, Mode=OneWay}">
+                                        <ItemsControl.ItemTemplate>
+                                            <DataTemplate>
+                                                <Grid Padding="12,10" ColumnSpacing="12">
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width="120" />
+                                                        <ColumnDefinition Width="140" />
+                                                        <ColumnDefinition Width="140" />
+                                                        <ColumnDefinition Width="140" />
+                                                        <ColumnDefinition Width="100" />
+                                                        <ColumnDefinition Width="*" />
+                                                    </Grid.ColumnDefinitions>
+
+                                                    <!-- 1. Date (Left aligned, DD-MM-YYYY) -->
+                                                    <TextBlock Grid.Column="0" Text="{Binding FormattedDate, Mode=OneWay}" FontSize="13" VerticalAlignment="Center" HorizontalAlignment="Left" />
+
+                                                    <!-- 2. Withdrawal (Right aligned, Red for amount, subtle for —) -->
+                                                    <TextBlock Grid.Column="1" Text="{Binding DisplayWithdrawal, Mode=OneWay}" FontSize="13" FontWeight="SemiBold" Foreground="{Binding DisplayWithdrawal, Mode=OneWay, Converter={StaticResource DashToSubtleBrushConverter}, ConverterParameter=ErrorBrush}" VerticalAlignment="Center" HorizontalAlignment="Right" />
+
+                                                    <!-- 3. Deposit (Right aligned, Green for amount, subtle for —) -->
+                                                    <TextBlock Grid.Column="2" Text="{Binding DisplayDeposit, Mode=OneWay}" FontSize="13" FontWeight="SemiBold" Foreground="{Binding DisplayDeposit, Mode=OneWay, Converter={StaticResource DashToSubtleBrushConverter}, ConverterParameter=SuccessBrush}" VerticalAlignment="Center" HorizontalAlignment="Right" />
+
+                                                    <!-- 4. Interest Amount (Right aligned, Blue for amount, subtle for —) -->
+                                                    <TextBlock Grid.Column="3" Text="{Binding DisplayInterest, Mode=OneWay}" FontSize="13" FontWeight="SemiBold" Foreground="{Binding DisplayInterest, Mode=OneWay, Converter={StaticResource DashToSubtleBrushConverter}, ConverterParameter=PrimaryBrush}" VerticalAlignment="Center" HorizontalAlignment="Right" />
+
+                                                    <!-- 5. Percent (Center aligned, Neutral text) -->
+                                                    <TextBlock Grid.Column="4" Text="{Binding DisplayPercent, Mode=OneWay}" FontSize="13" VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="{ThemeResource ApplicationForegroundBrush}" />
+
+                                                    <!-- 6. Running Balance (Right aligned, Neutral/Dark text) -->
+                                                    <TextBlock Grid.Column="5" Text="{Binding FormattedRunningBalance, Mode=OneWay}" FontSize="13" FontWeight="SemiBold" VerticalAlignment="Center" HorizontalAlignment="Right" Foreground="{ThemeResource ApplicationForegroundBrush}" />
+                                                </Grid>
+                                            </DataTemplate>
+                                        </ItemsControl.ItemTemplate>
+                                    </ItemsControl>
+                                </StackPanel>
+                            </Grid>
+
+                            <!-- Final Account Closed Separator Line (Shown only when CLOSED) -->
+                            <Border Grid.Row="2" Margin="0,8,0,0" Padding="0,8" HorizontalAlignment="Stretch" Visibility="{Binding IsClosed, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}">
+                                <TextBlock Text="{Binding AccountClosedSeparatorText, Mode=OneWay}" FontSize="13" FontWeight="SemiBold" Foreground="{ThemeResource ErrorBrush}" HorizontalAlignment="Center" TextAlignment="Center" />
+                            </Border>
+                        </Grid>
+                    </Border>
+                </Grid>
+            </Grid>
+        </ScrollViewer>
+
+        <!-- Transaction Entry Modal Overlay Dialog for Receive Amount / Give Amount -->
+        <Grid Background="#80000000" Visibility="{Binding IsTransactionDialogOpen, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}">
+            <Border Background="{ThemeResource SurfaceBackgroundBrush}" BorderBrush="{ThemeResource BorderBrush}" BorderThickness="1" CornerRadius="12" Padding="28" MinWidth="320" MaxWidth="460" Margin="16" HorizontalAlignment="Center" VerticalAlignment="Center">
+                <StackPanel Spacing="18">
+                    <StackPanel Spacing="4">
+                        <TextBlock Text="{Binding TransactionDialogTitle, Mode=OneWay}" FontSize="20" FontWeight="Bold" Foreground="{ThemeResource ApplicationForegroundBrush}" TextWrapping="Wrap" />
+                        <TextBlock Text="{Binding FullName, Mode=OneWay}" FontSize="13" Foreground="{ThemeResource SubtleForegroundBrush}" TextWrapping="Wrap" />
+                    </StackPanel>
+
+                    <!-- Amount Entry -->
+                    <StackPanel Spacing="6">
+                        <TextBlock Text="{Binding TransactionAmountFieldLabel, Mode=OneWay}" FontSize="12" FontWeight="SemiBold" Foreground="{ThemeResource ApplicationForegroundBrush}" />
+                        <TextBox Text="{Binding TransactionAmountText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" PlaceholderText="{Binding EnterAmountPlaceholderLabel, Mode=OneWay}" FontSize="14" Padding="10,8" InputScope="Number" />
+                    </StackPanel>
+
+                    <!-- Date Picker Entry -->
+                    <StackPanel Spacing="6">
+                        <TextBlock Text="{Binding TransactionDateFieldLabel, Mode=OneWay}" FontSize="12" FontWeight="SemiBold" Foreground="{ThemeResource ApplicationForegroundBrush}" />
+                        <DatePicker helpers:DatePickerLocalization.IsEnabled="True" Date="{Binding TransactionDate, Mode=TwoWay}" HorizontalAlignment="Stretch" />
+                    </StackPanel>
+
+                    <!-- Description Entry -->
+                    <StackPanel Spacing="6">
+                        <TextBlock Text="{Binding TransactionDescriptionFieldLabel, Mode=OneWay}" FontSize="12" FontWeight="SemiBold" Foreground="{ThemeResource ApplicationForegroundBrush}" />
+                        <controls:DhirDharPhoneticTextBox Text="{Binding TransactionDescription, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" PlaceholderText="{Binding TransactionDescriptionPlaceholderLabel, Mode=OneWay}" FontSize="13" Padding="10,8" />
+                    </StackPanel>
+
+                    <!-- Validation Error Banner -->
+                    <TextBlock Text="{Binding TransactionValidationError, Mode=OneWay}" Foreground="{ThemeResource ErrorBrush}" FontSize="12" FontWeight="SemiBold" TextWrapping="Wrap" Visibility="{Binding HasTransactionValidationError, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}" />
+
+                    <!-- Action Buttons -->
+                    <Grid Margin="0,10,0,0" ColumnSpacing="12">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <Button Grid.Column="0" Content="{Binding CancelLabel, Mode=OneWay}" Command="{Binding CancelTransactionCommand, Mode=OneWay}" HorizontalAlignment="Stretch" Style="{StaticResource HeaderActionButtonStyle}" />
+                        <Button Grid.Column="1" Content="{Binding SaveTransactionLabel, Mode=OneWay}" Command="{Binding SaveTransactionCommand, Mode=OneWay}" HorizontalAlignment="Stretch" Style="{StaticResource HeaderPrimaryActionButtonStyle}" />
+                    </Grid>
+                </StackPanel>
+            </Border>
+        </Grid>
+
+        <!-- Close Account Confirmation Modal Overlay Dialog -->
+        <Grid Background="#80000000" Visibility="{Binding IsCloseAccountDialogOpen, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}">
+            <Border Background="{ThemeResource SurfaceBackgroundBrush}" BorderBrush="{ThemeResource BorderBrush}" BorderThickness="1" CornerRadius="12" Padding="28" MinWidth="320" MaxWidth="460" Margin="16" HorizontalAlignment="Center" VerticalAlignment="Center">
+                <StackPanel Spacing="18">
+                    <StackPanel Spacing="4">
+                        <TextBlock Text="{Binding CloseAccountLabel, Mode=OneWay}" FontSize="20" FontWeight="Bold" Foreground="{ThemeResource ApplicationForegroundBrush}" TextWrapping="Wrap" />
+                        <TextBlock Text="{Binding FullName, Mode=OneWay}" FontSize="13" Foreground="{ThemeResource SubtleForegroundBrush}" TextWrapping="Wrap" />
+                    </StackPanel>
+
+                    <!-- Date Picker Entry -->
+                    <StackPanel Spacing="6">
+                        <TextBlock Text="{Binding ClosingDateFieldLabel, Mode=OneWay}" FontSize="12" FontWeight="SemiBold" Foreground="{ThemeResource ApplicationForegroundBrush}" />
+                        <DatePicker helpers:DatePickerLocalization.IsEnabled="True" Date="{Binding CloseAccountDate, Mode=TwoWay}" HorizontalAlignment="Stretch" />
+                    </StackPanel>
+
+                    <!-- Closing Amount (Read-Only) -->
+                    <StackPanel Spacing="6">
+                        <TextBlock Text="{Binding ClosingAmountFieldLabel, Mode=OneWay}" FontSize="12" FontWeight="SemiBold" Foreground="{ThemeResource ApplicationForegroundBrush}" />
+                        <Border Background="{ThemeResource ApplicationBackgroundBrush}" BorderBrush="{ThemeResource BorderBrush}" BorderThickness="1" CornerRadius="6" Padding="12,10">
+                            <Grid>
+                                <TextBlock Text="{Binding DisplayClosingAmount, Mode=OneWay}" FontSize="18" FontWeight="Bold" Foreground="{ThemeResource PrimaryBrush}" VerticalAlignment="Center" />
+                                <ProgressRing IsActive="{Binding IsCalculatingClosingAmount, Mode=OneWay}" Width="18" Height="18" HorizontalAlignment="Right" VerticalAlignment="Center" Visibility="{Binding IsCalculatingClosingAmount, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}" />
+                            </Grid>
+                        </Border>
+                    </StackPanel>
+
+                    <TextBlock Text="{Binding CloseAccountConfirmLabel, Mode=OneWay}" FontSize="14" Foreground="{ThemeResource ApplicationForegroundBrush}" TextWrapping="Wrap" />
+
+                    <Border Background="{ThemeResource ApplicationBackgroundBrush}" BorderBrush="{ThemeResource BorderBrush}" BorderThickness="1" CornerRadius="8" Padding="12">
+                        <TextBlock Text="{Binding CloseAccountInfoLabel, Mode=OneWay}" FontSize="12" Foreground="{ThemeResource SubtleForegroundBrush}" TextWrapping="Wrap" />
+                    </Border>
+
+                    <TextBlock Text="{Binding CloseAccountValidationError, Mode=OneWay}" Foreground="{ThemeResource ErrorBrush}" FontSize="12" FontWeight="SemiBold" TextWrapping="Wrap" Visibility="{Binding HasCloseAccountValidationError, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}" />
+
+                    <Grid Margin="0,10,0,0" ColumnSpacing="12">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <Button Grid.Column="0" Content="{Binding CancelLabel, Mode=OneWay}" Command="{Binding CancelCloseAccountCommand, Mode=OneWay}" HorizontalAlignment="Stretch" Style="{StaticResource HeaderActionButtonStyle}" />
+                        <Button Grid.Column="1" Content="{Binding CloseAccountLabel, Mode=OneWay}" Command="{Binding ConfirmCloseAccountCommand, Mode=OneWay}" HorizontalAlignment="Stretch" Style="{StaticResource CloseActionButtonStyle}" />
+                    </Grid>
+                </StackPanel>
+            </Border>
+        </Grid>
+    </Grid>
+</Page>

@@ -1,0 +1,45 @@
+# Build results
+[Bb]in/
+[Oo]bj/
+Release/
+Release_Obfuscated/
+Publish/
+Packages/
+TestResults/
+
+# User-specific files & IDE
+.vs/
+.vscode/
+.idea/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Database & User Data
+*.db
+*.db-shm
+*.db-wal
+*.sqlite
+*.sqlite3
+*.bak
+
+# Logs and temporary files
+*.log
+*.tmp
+*.temp
+update.log
+
+# Certificates and keys
+*.pfx
+*.p12
+*.key
+*.pem
+*.cer
+*.crt
+*client_secrets.json
+publish_release.py
+
+# Inno Setup output (built locally)
+Installer/
+DhirDhar Solution/Installer/

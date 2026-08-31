@@ -1,0 +1,21 @@
+[DoExecute Result]: True
+[DIAG ENTRY]: Microsoft.UI.Xaml.Markup.Compiler.MSBuildInterop.MSBuildLogEntry
+  SubCategory = 
+  ErrorCode = 
+  HelpKeyword = 
+  File = 
+  LineNumber = 0
+  ColumnNumber = 0
+  EndLineNumber = 0
+  EndColumnNumber = 0
+  Message = Xaml Compiler Marker: 01:41:58 PM: 423 perfXC_StartPass2
+[DIAG ENTRY]: Microsoft.UI.Xaml.Markup.Compiler.MSBuildInterop.MSBuildLogEntry
+  SubCategory = XamlCompiler
+  ErrorCode = WMC1001
+  HelpKeyword = 
+  File = 
+  LineNumber = 0
+  ColumnNumber = 0
+  EndLineNumber = 0
+  EndColumnNumber = 0
+  Message = CompileXaml Task invoked with no XAML to compile

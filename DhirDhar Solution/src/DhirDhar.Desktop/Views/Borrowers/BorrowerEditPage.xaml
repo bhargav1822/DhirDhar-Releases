@@ -1,0 +1,401 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Page
+    x:Class="DhirDhar.Desktop.Views.Borrowers.BorrowerEditPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:converters="using:DhirDhar.Desktop.Converters"
+    xmlns:helpers="using:DhirDhar.Desktop.Helpers"
+    xmlns:controls="using:DhirDhar.Desktop.Controls"
+    Background="{ThemeResource ApplicationBackgroundBrush}">
+
+    <Page.Resources>
+        <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
+        <converters:InverseBoolToVisibilityConverter x:Key="InverseBoolToVisibilityConverter" />
+        <converters:StringToVisibilityConverter x:Key="StringToVisibilityConverter" />
+
+        <Style x:Key="PhotoCardButtonStyle" TargetType="Button">
+            <Setter Property="Background" Value="{ThemeResource SurfaceBackgroundBrush}" />
+            <Setter Property="BorderBrush" Value="{ThemeResource BorderBrush}" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="CornerRadius" Value="6" />
+            <Setter Property="Padding" Value="12,6" />
+            <Setter Property="Height" Value="32" />
+            <Setter Property="FontSize" Value="12" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+        </Style>
+
+        <Style x:Key="PhotoCardPrimaryButtonStyle" TargetType="Button">
+            <Setter Property="Background" Value="{ThemeResource PrimaryBrush}" />
+            <Setter Property="Foreground" Value="{ThemeResource PrimaryForegroundBrush}" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="CornerRadius" Value="6" />
+            <Setter Property="Padding" Value="12,6" />
+            <Setter Property="Height" Value="32" />
+            <Setter Property="FontSize" Value="12" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+        </Style>
+
+        <Style x:Key="ReopenActionButtonStyle" TargetType="Button">
+            <Setter Property="Background" Value="{ThemeResource PrimaryBrush}" />
+            <Setter Property="Foreground" Value="{ThemeResource PrimaryForegroundBrush}" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="CornerRadius" Value="6" />
+            <Setter Property="Padding" Value="14,6" />
+            <Setter Property="FontSize" Value="13" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+        </Style>
+    </Page.Resources>
+
+    <Grid>
+        <ScrollViewer x:Name="FormScrollViewer" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+            <Grid Padding="24,20" RowSpacing="16" HorizontalAlignment="Stretch">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+
+            <!-- Page Header & Input Mode Switcher -->
+            <Grid Grid.Row="0" HorizontalAlignment="Stretch" RowSpacing="10">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="12" VerticalAlignment="Center">
+                    <Button Command="{Binding CancelCommand, Mode=OneWay}"
+                            Width="36" Height="36" Padding="0" CornerRadius="18"
+                            Background="Transparent" BorderThickness="0"
+                            ToolTipService.ToolTip="{Binding CancelText, Mode=OneWay}">
+                        <FontIcon Glyph="&#xE72B;" FontSize="16" Foreground="{ThemeResource PrimaryBrush}" />
+                    </Button>
+                    <StackPanel Spacing="2" VerticalAlignment="Center">
+                        <TextBlock Text="{Binding PageTitle, Mode=OneWay}" FontSize="24" FontWeight="SemiBold" TextWrapping="Wrap" />
+                        <TextBlock Text="{Binding SubtitleText, Mode=OneWay}" FontSize="13" Foreground="{ThemeResource SubtleForegroundBrush}" TextWrapping="Wrap" />
+                    </StackPanel>
+                </StackPanel>
+
+                <!-- Active Language Indicator -->
+                <Border Grid.Column="1" Visibility="{Binding IsIndicLanguageSelected, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}"
+                        Background="{ThemeResource SurfaceBackgroundBrush}" BorderBrush="{ThemeResource PrimaryBrush}" BorderThickness="1" CornerRadius="8" Padding="12,6" VerticalAlignment="Center">
+                    <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+                        <FontIcon Glyph="&#xE8C1;" FontSize="13" Foreground="{ThemeResource PrimaryBrush}" />
+                        <TextBlock Text="{Binding ActiveLanguageName, Mode=OneWay}" FontWeight="SemiBold" FontSize="12" VerticalAlignment="Center" />
+                        <TextBlock Text="{Binding InputModeLabel, Mode=OneWay}" FontSize="12" Foreground="{ThemeResource SubtleForegroundBrush}" VerticalAlignment="Center" />
+                    </StackPanel>
+                </Border>
+            </Grid>
+
+            <!-- Closed Account Notice / Reopen Banner -->
+            <Border Grid.Row="1" Background="#15E05252" BorderBrush="#E05252" BorderThickness="1" CornerRadius="8" Padding="14,10"
+                        Visibility="{Binding IsClosed, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
+                            <FontIcon Glyph="&#xE7BA;" FontSize="16" Foreground="#E05252" VerticalAlignment="Center" />
+                            <StackPanel Spacing="2" VerticalAlignment="Center">
+                                <TextBlock Text="{Binding ClosedAccountBannerTitle, Mode=OneWay}" FontWeight="SemiBold" FontSize="13" Foreground="{ThemeResource ApplicationForegroundBrush}" />
+                                <TextBlock Text="{Binding ClosedAccountBannerDescription, Mode=OneWay}" FontSize="12" Foreground="{ThemeResource SubtleForegroundBrush}" TextWrapping="Wrap" />
+                            </StackPanel>
+                        </StackPanel>
+                        <Button Grid.Column="1" Content="{Binding ReopenAccountLabel, Mode=OneWay}"
+                                Style="{StaticResource ReopenActionButtonStyle}"
+                                Command="{Binding OpenReopenAccountDialogCommand, Mode=OneWay}"
+                                VerticalAlignment="Center" Height="32" Padding="14,0" CornerRadius="6" Margin="12,0,0,0" />
+                    </Grid>
+                </Border>
+
+                <!-- Form Card -->
+                <Border Grid.Row="2" Background="{ThemeResource SurfaceBackgroundBrush}" CornerRadius="12" BorderBrush="{ThemeResource BorderBrush}" BorderThickness="1" Padding="20,18" HorizontalAlignment="Stretch">
+                <Grid x:Name="RootGrid" RowSpacing="12" ColumnSpacing="20">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition x:Name="Col1" Width="*" />
+                        <ColumnDefinition x:Name="Col2" Width="*" />
+                    </Grid.ColumnDefinitions>
+
+                    <!-- Row 0: Full Name & Village -->
+                    <StackPanel x:Name="FullNameCol" Grid.Column="0" Grid.Row="0" Spacing="4">
+                        <TextBlock FontSize="13" FontWeight="Medium" Foreground="{ThemeResource ApplicationForegroundBrush}">
+                            <Run Text="{Binding FullNameLabel, Mode=OneWay}" /><Run Text=" *" Foreground="{ThemeResource ErrorBrush}" />
+                        </TextBlock>
+                        <controls:DhirDharPhoneticTextBox Height="36" CornerRadius="6" HorizontalAlignment="Stretch" PlaceholderText="{Binding FullNamePlaceholder, Mode=OneWay}" Text="{Binding FullName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" IsEnabled="{Binding IsCreateMode, Mode=OneWay}" />
+                        <TextBlock Text="{Binding FullNameError, Mode=OneWay}" FontSize="11" Foreground="{ThemeResource ErrorBrush}" Visibility="{Binding FullNameError, Mode=OneWay, Converter={StaticResource StringToVisibilityConverter}}" />
+                    </StackPanel>
+
+                    <StackPanel x:Name="VillageCol" Grid.Column="1" Grid.Row="0" Spacing="4">
+                        <TextBlock FontSize="13" FontWeight="Medium" Foreground="{ThemeResource ApplicationForegroundBrush}">
+                            <Run Text="{Binding VillageLabel, Mode=OneWay}" /><Run Text=" *" Foreground="{ThemeResource ErrorBrush}" />
+                        </TextBlock>
+                        <controls:DhirDharPhoneticTextBox Height="36" CornerRadius="6" HorizontalAlignment="Stretch" PlaceholderText="{Binding VillagePlaceholder, Mode=OneWay}" Text="{Binding Village, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" IsEnabled="{Binding IsCreateMode, Mode=OneWay}" />
+                        <TextBlock Text="{Binding VillageError, Mode=OneWay}" FontSize="11" Foreground="{ThemeResource ErrorBrush}" Visibility="{Binding VillageError, Mode=OneWay, Converter={StaticResource StringToVisibilityConverter}}" />
+                    </StackPanel>
+
+                    <!-- Row 1: Mobile Number & Aadhaar Number -->
+                    <StackPanel x:Name="MobileCol" Grid.Column="0" Grid.Row="1" Spacing="4">
+                        <TextBlock FontSize="13" FontWeight="Medium" Foreground="{ThemeResource ApplicationForegroundBrush}">
+                            <Run Text="{Binding MobileNumberLabel, Mode=OneWay}" /><Run Text=" " /><Run Text="{Binding OptionalLabel, Mode=OneWay}" Foreground="{ThemeResource SubtleForegroundBrush}" FontSize="11" FontWeight="Normal" />
+                        </TextBlock>
+                        <TextBox Height="36" CornerRadius="6" HorizontalAlignment="Stretch" PlaceholderText="{Binding MobileNumberPlaceholder, Mode=OneWay}" Text="{Binding MobileNumber, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" InputScope="Number" />
+                        <TextBlock Text="{Binding MobileNumberError, Mode=OneWay}" FontSize="11" Foreground="{ThemeResource ErrorBrush}" Visibility="{Binding MobileNumberError, Mode=OneWay, Converter={StaticResource StringToVisibilityConverter}}" />
+                    </StackPanel>
+
+                    <StackPanel x:Name="AadharCol" Grid.Column="1" Grid.Row="1" Spacing="4">
+                        <TextBlock FontSize="13" FontWeight="Medium" Foreground="{ThemeResource ApplicationForegroundBrush}">
+                            <Run Text="{Binding AadharNumberLabel, Mode=OneWay}" /><Run Text=" " /><Run Text="{Binding OptionalLabel, Mode=OneWay}" Foreground="{ThemeResource SubtleForegroundBrush}" FontSize="11" FontWeight="Normal" />
+                        </TextBlock>
+                        <TextBox Height="36" CornerRadius="6" HorizontalAlignment="Stretch" PlaceholderText="{Binding AadharNumberPlaceholder, Mode=OneWay}" Text="{Binding AadharNumber, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" IsEnabled="{Binding IsCreateMode, Mode=OneWay}" InputScope="Number" />
+                        <TextBlock Text="{Binding AadharNumberError, Mode=OneWay}" FontSize="11" Foreground="{ThemeResource ErrorBrush}" Visibility="{Binding AadharNumberError, Mode=OneWay, Converter={StaticResource StringToVisibilityConverter}}" />
+                    </StackPanel>
+
+                    <!-- Row 2: Loan Type & Ornament Type -->
+                    <StackPanel x:Name="LoanTypeCol" Grid.Column="0" Grid.Row="2" Spacing="4">
+                        <TextBlock FontSize="13" FontWeight="Medium" Foreground="{ThemeResource ApplicationForegroundBrush}">
+                            <Run Text="{Binding LoanTypeLabel, Mode=OneWay}" /><Run Text=" *" Foreground="{ThemeResource ErrorBrush}" />
+                        </TextBlock>
+                        <ComboBox Height="36" CornerRadius="6" HorizontalAlignment="Stretch"
+                                  ItemsSource="{Binding LoanTypeOptions, Mode=OneWay}"
+                                  SelectedValue="{Binding SelectedLoanType, Mode=TwoWay}"
+                                  SelectedValuePath="Value" DisplayMemberPath="Label"
+                                  PlaceholderText="{Binding SelectLoanTypeLabel, Mode=OneWay}"
+                                  IsEnabled="{Binding IsCreateMode, Mode=OneWay}" />
+                        <TextBlock Text="{Binding LoanTypeError, Mode=OneWay}" FontSize="11" Foreground="{ThemeResource ErrorBrush}" Visibility="{Binding LoanTypeError, Mode=OneWay, Converter={StaticResource StringToVisibilityConverter}}" />
+                    </StackPanel>
+
+                    <StackPanel x:Name="OrnamentTypeCol" Grid.Column="1" Grid.Row="2" Spacing="4" Visibility="{Binding IsOrnamentSectionVisible, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}">
+                        <TextBlock FontSize="13" FontWeight="Medium" Foreground="{ThemeResource ApplicationForegroundBrush}">
+                            <Run Text="{Binding OrnamentTypeLabel, Mode=OneWay}" /><Run Text=" *" Foreground="{ThemeResource ErrorBrush}" />
+                        </TextBlock>
+                        <ComboBox Height="36" CornerRadius="6" HorizontalAlignment="Stretch"
+                                  ItemsSource="{Binding OrnamentTypeOptions, Mode=OneWay}"
+                                  SelectedValue="{Binding SelectedOrnamentType, Mode=TwoWay}"
+                                  SelectedValuePath="Value" DisplayMemberPath="Label"
+                                  PlaceholderText="{Binding SelectOrnamentCategoryLabel, Mode=OneWay}"
+                                  IsEnabled="{Binding IsCreateMode, Mode=OneWay}" />
+                        <TextBlock Text="{Binding OrnamentTypeError, Mode=OneWay}" FontSize="11" Foreground="{ThemeResource ErrorBrush}" Visibility="{Binding OrnamentTypeError, Mode=OneWay, Converter={StaticResource StringToVisibilityConverter}}" />
+                    </StackPanel>
+
+                    <!-- Row 3: Ornament Weight & Enter Ornament Type -->
+                    <StackPanel x:Name="OrnamentWeightCol" Grid.Column="0" Grid.Row="3" Spacing="4" Visibility="{Binding IsOrnamentSectionVisible, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}">
+                        <TextBlock FontSize="13" FontWeight="Medium" Foreground="{ThemeResource ApplicationForegroundBrush}">
+                            <Run Text="{Binding OrnamentWeightLabel, Mode=OneWay}" /><Run Text=" *" Foreground="{ThemeResource ErrorBrush}" />
+                        </TextBlock>
+                        <Grid ColumnSpacing="0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <TextBox Grid.Column="0" Height="36" CornerRadius="6,0,0,6" HorizontalAlignment="Stretch" PlaceholderText="0.00" Text="{Binding OrnamentWeightText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" IsEnabled="{Binding IsCreateMode, Mode=OneWay}" InputScope="Number" />
+                            <Border Grid.Column="1" Height="36" Padding="12,0" Background="{ThemeResource ApplicationBackgroundBrush}" BorderBrush="{ThemeResource BorderBrush}" BorderThickness="0,1,1,1" CornerRadius="0,6,6,0" VerticalAlignment="Center">
+                                <TextBlock Text="{Binding GramsLabel, Mode=OneWay}" FontSize="12" Foreground="{ThemeResource SubtleForegroundBrush}" VerticalAlignment="Center" FontWeight="Medium" />
+                            </Border>
+                        </Grid>
+                        <TextBlock Text="{Binding OrnamentWeightError, Mode=OneWay}" FontSize="11" Foreground="{ThemeResource ErrorBrush}" Visibility="{Binding OrnamentWeightError, Mode=OneWay, Converter={StaticResource StringToVisibilityConverter}}" />
+                    </StackPanel>
+
+                    <StackPanel x:Name="CustomOrnamentTypeCol" Grid.Column="1" Grid.Row="3" Spacing="4" Visibility="{Binding IsCustomOrnamentTypeVisible, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}">
+                        <TextBlock FontSize="13" FontWeight="Medium" Foreground="{ThemeResource ApplicationForegroundBrush}">
+                            <Run Text="{Binding EnterOrnamentTypeLabel, Mode=OneWay}" /><Run Text=" *" Foreground="{ThemeResource ErrorBrush}" />
+                        </TextBlock>
+                        <controls:DhirDharPhoneticTextBox Height="36" CornerRadius="6" HorizontalAlignment="Stretch" PlaceholderText="{Binding EnterOrnamentTypePlaceholderLabel, Mode=OneWay}" Text="{Binding CustomOrnamentType, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" IsEnabled="{Binding IsCreateMode, Mode=OneWay}" />
+                        <TextBlock Text="{Binding CustomOrnamentTypeError, Mode=OneWay}" FontSize="11" Foreground="{ThemeResource ErrorBrush}" Visibility="{Binding CustomOrnamentTypeError, Mode=OneWay, Converter={StaticResource StringToVisibilityConverter}}" />
+                    </StackPanel>
+
+                    <!-- Row 4: Loan Amount & Loan Date -->
+                    <StackPanel x:Name="LoanAmountCol" Grid.Column="0" Grid.Row="4" Spacing="4">
+                        <TextBlock FontSize="13" FontWeight="Medium" Foreground="{ThemeResource ApplicationForegroundBrush}">
+                            <Run Text="{Binding LoanAmountLabel, Mode=OneWay}" /><Run Text=" *" Foreground="{ThemeResource ErrorBrush}" />
+                        </TextBlock>
+                        <Grid ColumnSpacing="0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <Border Grid.Column="0" Height="36" Padding="12,0" Background="{ThemeResource ApplicationBackgroundBrush}" BorderBrush="{ThemeResource BorderBrush}" BorderThickness="1,1,0,1" CornerRadius="6,0,0,6" VerticalAlignment="Center">
+                                <TextBlock Text="&#x20B9;" FontSize="13" Foreground="{ThemeResource SubtleForegroundBrush}" VerticalAlignment="Center" FontWeight="Medium" />
+                            </Border>
+                            <TextBox Grid.Column="1" Height="36" CornerRadius="0,6,6,0" HorizontalAlignment="Stretch" PlaceholderText="{Binding LoanAmountPlaceholder, Mode=OneWay}" Text="{Binding LoanAmountText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" IsEnabled="{Binding IsCreateMode, Mode=OneWay}" InputScope="Number" />
+                        </Grid>
+                        <TextBlock Text="{Binding LoanAmountError, Mode=OneWay}" FontSize="11" Foreground="{ThemeResource ErrorBrush}" Visibility="{Binding LoanAmountError, Mode=OneWay, Converter={StaticResource StringToVisibilityConverter}}" />
+                    </StackPanel>
+
+                    <StackPanel x:Name="LoanDateCol" Grid.Column="1" Grid.Row="4" Spacing="4">
+                        <TextBlock FontSize="13" FontWeight="Medium" Foreground="{ThemeResource ApplicationForegroundBrush}">
+                            <Run Text="{Binding LoanDateLabel, Mode=OneWay}" /><Run Text=" *" Foreground="{ThemeResource ErrorBrush}" />
+                        </TextBlock>
+                        <DatePicker Height="36" CornerRadius="6" HorizontalAlignment="Stretch" helpers:DatePickerLocalization.IsEnabled="True" SelectedDate="{Binding LoanDate, Mode=TwoWay}" IsEnabled="{Binding IsCreateMode, Mode=OneWay}" />
+                        <TextBlock Text="{Binding LoanDateError, Mode=OneWay}" FontSize="11" Foreground="{ThemeResource ErrorBrush}" Visibility="{Binding LoanDateError, Mode=OneWay, Converter={StaticResource StringToVisibilityConverter}}" />
+                    </StackPanel>
+
+                    <!-- Row 5: Interest Rate & Serial Number -->
+                    <StackPanel x:Name="InterestRateCol" Grid.Column="0" Grid.Row="5" Spacing="4">
+                        <TextBlock FontSize="13" FontWeight="Medium" Foreground="{ThemeResource ApplicationForegroundBrush}">
+                            <Run Text="{Binding InterestRateLabel, Mode=OneWay}" /><Run Text=" *" Foreground="{ThemeResource ErrorBrush}" />
+                        </TextBlock>
+                        <Grid ColumnSpacing="0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <TextBox Grid.Column="0" Height="36" CornerRadius="6,0,0,6" HorizontalAlignment="Stretch" PlaceholderText="{Binding InterestRatePlaceholder, Mode=OneWay}" Text="{Binding InterestRateText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" InputScope="Number" />
+                            <Border Grid.Column="1" Height="36" Padding="12,0" Background="{ThemeResource ApplicationBackgroundBrush}" BorderBrush="{ThemeResource BorderBrush}" BorderThickness="0,1,1,1" CornerRadius="0,6,6,0" VerticalAlignment="Center">
+                                <TextBlock Text="{Binding PercentPerMonthLabel, Mode=OneWay}" FontSize="12" Foreground="{ThemeResource SubtleForegroundBrush}" VerticalAlignment="Center" FontWeight="Medium" />
+                            </Border>
+                        </Grid>
+                        <TextBlock Text="{Binding InterestRateError, Mode=OneWay}" FontSize="11" Foreground="{ThemeResource ErrorBrush}" Visibility="{Binding InterestRateError, Mode=OneWay, Converter={StaticResource StringToVisibilityConverter}}" />
+                    </StackPanel>
+
+                    <StackPanel x:Name="BorrowerNumberCol" Grid.Column="1" Grid.Row="5" Spacing="4">
+                        <TextBlock FontSize="13" FontWeight="Medium" Foreground="{ThemeResource ApplicationForegroundBrush}">
+                            <Run Text="{Binding BorrowerNumberLabel, Mode=OneWay}" /><Run Text=" *" Foreground="{ThemeResource ErrorBrush}" />
+                        </TextBlock>
+                        <Grid Height="36" HorizontalAlignment="Stretch" ColumnSpacing="6">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <!-- Fixed, read-only Business Profile initials prefix badge -->
+                            <Border Grid.Column="0" Background="{ThemeResource SurfaceBackgroundBrush}" CornerRadius="6" BorderBrush="{ThemeResource BorderBrush}" BorderThickness="1" Padding="12,0" MinWidth="54" HorizontalAlignment="Center">
+                                <TextBlock Text="{Binding BorrowerPrefix, Mode=OneWay}"
+                                           FontSize="13" FontWeight="SemiBold" Foreground="{ThemeResource PrimaryBrush}"
+                                           VerticalAlignment="Center" HorizontalAlignment="Center" />
+                            </Border>
+                            <!-- Editable numeric sequence -->
+                            <TextBox Grid.Column="1" Height="36" CornerRadius="6" HorizontalAlignment="Stretch"
+                                     PlaceholderText="{Binding BorrowerNumberPlaceholder, Mode=OneWay}"
+                                     Text="{Binding BorrowerSequenceNumber, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                     InputScope="Number" />
+                        </Grid>
+                        <TextBlock Text="{Binding BorrowerNumberError, Mode=OneWay}" FontSize="11" Foreground="{ThemeResource ErrorBrush}" Visibility="{Binding BorrowerNumberError, Mode=OneWay, Converter={StaticResource StringToVisibilityConverter}}" />
+                    </StackPanel>
+
+                    <!-- Row 6: Photos Section (Borrower Photo & Ornament Photo side by side) -->
+                    <Grid Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="6" ColumnSpacing="20" Margin="0,4,0,0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+
+                        <!-- Borrower Photo Card -->
+                        <Border Grid.Column="0" Background="{ThemeResource ApplicationBackgroundBrush}" BorderBrush="{ThemeResource BorderBrush}" BorderThickness="1" CornerRadius="10" Padding="14,12">
+                            <StackPanel Spacing="10">
+                                <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                                    <FontIcon Glyph="&#xE722;" FontSize="15" Foreground="{ThemeResource PrimaryBrush}" />
+                                    <TextBlock Text="{Binding BorrowerPhotoLabel, Mode=OneWay}" FontSize="14" FontWeight="SemiBold" />
+                                    <TextBlock Text="{Binding OptionalLabel, Mode=OneWay}" FontSize="11" Foreground="{ThemeResource SubtleForegroundBrush}" VerticalAlignment="Center" />
+                                </StackPanel>
+
+                                <!-- Live Preview Area (Taller 350px box with Top alignment to prevent bottom clipping) -->
+                                <Border Height="350" Background="{ThemeResource SurfaceBackgroundBrush}" CornerRadius="8" BorderBrush="{ThemeResource BorderBrush}" BorderThickness="1" HorizontalAlignment="Stretch">
+                                    <Grid>
+                                        <!-- Default Camera Placeholder -->
+                                        <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Spacing="6" Visibility="{Binding HasBorrowerPhoto, Mode=OneWay, Converter={StaticResource InverseBoolToVisibilityConverter}}">
+                                            <FontIcon Glyph="&#xE722;" FontSize="32" Foreground="{ThemeResource SubtleForegroundBrush}" />
+                                            <TextBlock Text="{Binding NoBorrowerPhotoCapturedLabel, Mode=OneWay}" FontSize="13" Foreground="{ThemeResource SubtleForegroundBrush}" />
+                                        </StackPanel>
+
+                                        <!-- Captured Photo Preview -->
+                                        <Image Source="{Binding BorrowerPhotoPreview, Mode=OneWay}" Stretch="UniformToFill" HorizontalAlignment="Center" VerticalAlignment="Top" Visibility="{Binding HasBorrowerPhoto, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}" />
+                                    </Grid>
+                                </Border>
+
+                                <StackPanel Orientation="Horizontal" Spacing="10" HorizontalAlignment="Center">
+                                    <!-- Take Photo (No Photo) -->
+                                    <Button Content="{Binding TakePhotoLabel, Mode=OneWay}" Style="{StaticResource PhotoCardPrimaryButtonStyle}" Command="{Binding TakeBorrowerPhotoCommand, Mode=OneWay}" Visibility="{Binding HasBorrowerPhoto, Mode=OneWay, Converter={StaticResource InverseBoolToVisibilityConverter}}" IsEnabled="{Binding IsCreateMode, Mode=OneWay}" />
+
+                                    <!-- Retake & Remove (Has Photo) -->
+                                    <Button Content="{Binding RetakePhotoLabel, Mode=OneWay}" Style="{StaticResource PhotoCardButtonStyle}" Command="{Binding RetakeBorrowerPhotoCommand, Mode=OneWay}" Visibility="{Binding HasBorrowerPhoto, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}" IsEnabled="{Binding IsCreateMode, Mode=OneWay}" />
+                                    <Button Content="{Binding RemovePhotoLabel, Mode=OneWay}" Style="{StaticResource PhotoCardButtonStyle}" Command="{Binding RemoveBorrowerPhotoCommand, Mode=OneWay}" Visibility="{Binding HasBorrowerPhoto, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}" IsEnabled="{Binding IsCreateMode, Mode=OneWay}" />
+                                </StackPanel>
+                            </StackPanel>
+                        </Border>
+
+                        <!-- Ornament Photo Card (Conditional) -->
+                        <Border Grid.Column="1" Background="{ThemeResource ApplicationBackgroundBrush}" BorderBrush="{ThemeResource BorderBrush}" BorderThickness="1" CornerRadius="10" Padding="14,12" Visibility="{Binding IsOrnamentPhotoVisible, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}">
+                            <StackPanel Spacing="10">
+                                <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                                    <FontIcon Glyph="&#xE8B9;" FontSize="15" Foreground="{ThemeResource PrimaryBrush}" />
+                                    <TextBlock Text="{Binding OrnamentPhotoLabel, Mode=OneWay}" FontSize="14" FontWeight="SemiBold" />
+                                    <TextBlock Text="{Binding GoldSilverLabel, Mode=OneWay}" FontSize="11" Foreground="{ThemeResource SubtleForegroundBrush}" VerticalAlignment="Center" />
+                                </StackPanel>
+
+                                <!-- Live Preview Area (Taller 350px box with Top alignment to prevent bottom clipping) -->
+                                <Border Height="350" Background="{ThemeResource SurfaceBackgroundBrush}" CornerRadius="8" BorderBrush="{ThemeResource BorderBrush}" BorderThickness="1" HorizontalAlignment="Stretch">
+                                    <Grid>
+                                        <!-- Default Camera Placeholder -->
+                                        <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Spacing="6" Visibility="{Binding HasOrnamentPhoto, Mode=OneWay, Converter={StaticResource InverseBoolToVisibilityConverter}}">
+                                            <FontIcon Glyph="&#xE8B9;" FontSize="32" Foreground="{ThemeResource SubtleForegroundBrush}" />
+                                            <TextBlock Text="{Binding NoOrnamentPhotoCapturedLabel, Mode=OneWay}" FontSize="13" Foreground="{ThemeResource SubtleForegroundBrush}" />
+                                        </StackPanel>
+
+                                        <!-- Captured Ornament Preview -->
+                                        <Image Source="{Binding OrnamentPhotoPreview, Mode=OneWay}" Stretch="UniformToFill" HorizontalAlignment="Center" VerticalAlignment="Top" Visibility="{Binding HasOrnamentPhoto, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}" />
+                                    </Grid>
+                                </Border>
+
+                                <StackPanel Orientation="Horizontal" Spacing="10" HorizontalAlignment="Center">
+                                    <!-- Take Photo (No Photo) -->
+                                    <Button Content="{Binding TakePhotoLabel, Mode=OneWay}" Style="{StaticResource PhotoCardPrimaryButtonStyle}" Command="{Binding TakeOrnamentPhotoCommand, Mode=OneWay}" Visibility="{Binding HasOrnamentPhoto, Mode=OneWay, Converter={StaticResource InverseBoolToVisibilityConverter}}" IsEnabled="{Binding IsCreateMode, Mode=OneWay}" />
+
+                                    <!-- Retake & Remove (Has Photo) -->
+                                    <Button Content="{Binding RetakePhotoLabel, Mode=OneWay}" Style="{StaticResource PhotoCardButtonStyle}" Command="{Binding RetakeOrnamentPhotoCommand, Mode=OneWay}" Visibility="{Binding HasOrnamentPhoto, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}" IsEnabled="{Binding IsCreateMode, Mode=OneWay}" />
+                                    <Button Content="{Binding RemovePhotoLabel, Mode=OneWay}" Style="{StaticResource PhotoCardButtonStyle}" Command="{Binding RemoveOrnamentPhotoCommand, Mode=OneWay}" Visibility="{Binding HasOrnamentPhoto, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}" IsEnabled="{Binding IsCreateMode, Mode=OneWay}" />
+                                </StackPanel>
+                            </StackPanel>
+                        </Border>
+                    </Grid>
+
+                    <!-- Photo Error Message Banner -->
+                    <TextBlock Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="7" Text="{Binding PhotoErrorMessage, Mode=OneWay}" FontSize="11" Foreground="{ThemeResource ErrorBrush}" HorizontalAlignment="Center" Visibility="{Binding PhotoErrorMessage, Mode=OneWay, Converter={StaticResource StringToVisibilityConverter}}" />
+
+                    <!-- Action Buttons -->
+                    <StackPanel Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="8" x:Name="ButtonsPanel" Orientation="Horizontal" Spacing="10" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,8,0,0">
+                        <Button Content="{Binding CancelText, Mode=OneWay}" Style="{StaticResource SecondaryButtonStyle}" Height="36" MinWidth="90" CornerRadius="6" Command="{Binding CancelCommand, Mode=OneWay}" />
+                        <Button Content="{Binding SaveBorrowerText, Mode=OneWay}" Style="{StaticResource PrimaryButtonStyle}" Height="36" MinWidth="120" CornerRadius="6" Command="{Binding SaveCommand, Mode=OneWay}" />
+                        <ProgressRing Visibility="{Binding IsSaving, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}" Width="20" Height="20" VerticalAlignment="Center" />
+                    </StackPanel>
+                </Grid>
+            </Border>
+        </Grid>
+    </ScrollViewer>
+
+    <!-- Reopen Account Confirmation Modal Overlay Dialog -->
+    <Grid Background="#80000000" Visibility="{Binding IsReopenAccountDialogOpen, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}">
+        <Border Background="{ThemeResource SurfaceBackgroundBrush}" BorderBrush="{ThemeResource BorderBrush}" BorderThickness="1" CornerRadius="12" Padding="28" MinWidth="320" MaxWidth="460" Margin="16" HorizontalAlignment="Center" VerticalAlignment="Center">
+            <StackPanel Spacing="18">
+                <StackPanel Spacing="4">
+                    <TextBlock Text="{Binding ReopenAccountLabel, Mode=OneWay}" FontSize="20" FontWeight="Bold" Foreground="{ThemeResource ApplicationForegroundBrush}" TextWrapping="Wrap" />
+                    <TextBlock Text="{Binding FullName, Mode=OneWay}" FontSize="13" Foreground="{ThemeResource SubtleForegroundBrush}" TextWrapping="Wrap" />
+                </StackPanel>
+
+                <TextBlock Text="{Binding ConfirmReopenAccountMessageLabel, Mode=OneWay}" FontSize="14" Foreground="{ThemeResource ApplicationForegroundBrush}" TextWrapping="Wrap" />
+
+                <TextBlock Text="{Binding ReopenAccountValidationError, Mode=OneWay}" Foreground="{ThemeResource ErrorBrush}" FontSize="12" FontWeight="SemiBold" TextWrapping="Wrap" Visibility="{Binding HasReopenAccountValidationError, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}" />
+
+                <Grid Margin="0,10,0,0" ColumnSpacing="12">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+
+                    <Button Grid.Column="0" Content="{Binding CancelText, Mode=OneWay}" Style="{StaticResource SecondaryButtonStyle}" Height="38" HorizontalAlignment="Stretch" Command="{Binding CancelReopenAccountCommand, Mode=OneWay}" />
+                    <Button Grid.Column="1" Content="{Binding ReopenAccountLabel, Mode=OneWay}" Style="{StaticResource PrimaryButtonStyle}" Height="38" HorizontalAlignment="Stretch" Command="{Binding ConfirmReopenAccountCommand, Mode=OneWay}" />
+                </Grid>
+            </StackPanel>
+        </Border>
+    </Grid>
+</Grid>
+</Page>
