@@ -1,0 +1,14 @@
+## .NET
+bin/
+obj/
+*.user
+*.suo
+.vs/
+*.userprefs
+TestResults/
+*.trx
+
+## App output
+publish/
+Release/
+artifacts/

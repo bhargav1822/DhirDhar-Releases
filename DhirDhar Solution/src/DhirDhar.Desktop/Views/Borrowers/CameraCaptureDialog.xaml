@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ContentDialog
+    x:Class="DhirDhar.Desktop.Views.Borrowers.CameraCaptureDialog"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    DefaultButton="Primary"
+    PrimaryButtonClick="ContentDialog_PrimaryButtonClick"
+    CloseButtonClick="ContentDialog_CloseButtonClick">
+
+    <Grid RowSpacing="16" MinWidth="300" MaxWidth="520">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <!-- Camera Switcher Header -->
+        <Grid Grid.Row="0" ColumnSpacing="12" x:Name="CameraSelectionGrid">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <TextBlock Grid.Column="0" x:Name="CameraLabelTextBlock" Text="" VerticalAlignment="Center" FontWeight="SemiBold" FontSize="14" />
+            <ComboBox Grid.Column="1" x:Name="CameraDeviceComboBox" HorizontalAlignment="Stretch" DisplayMemberPath="Name" SelectionChanged="CameraDeviceComboBox_SelectionChanged" Height="40" CornerRadius="8" />
+        </Grid>
+
+        <!-- Live Camera Preview Box -->
+        <Border Grid.Row="1" Height="300" Background="{ThemeResource SurfaceBackgroundBrush}" CornerRadius="10" BorderBrush="{ThemeResource BorderBrush}" BorderThickness="1" HorizontalAlignment="Stretch">
+            <Grid x:Name="PreviewHostGrid">
+                <!-- Live Preview Media Player Element -->
+                <MediaPlayerElement x:Name="CameraMediaPlayerElement" AutoPlay="True" AreTransportControlsEnabled="False" Stretch="UniformToFill" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
+
+                <!-- Status/Error Overlay -->
+                <StackPanel x:Name="StatusStackPanel" VerticalAlignment="Center" HorizontalAlignment="Center" Spacing="8" Padding="20">
+                    <FontIcon x:Name="StatusIcon" Glyph="&#xE722;" FontSize="36" Foreground="{ThemeResource SubtleForegroundBrush}" />
+                    <TextBlock x:Name="StatusTextBlock" Text="" FontSize="13" Foreground="{ThemeResource SubtleForegroundBrush}" TextWrapping="Wrap" TextAlignment="Center" />
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <!-- Dynamic Error Banner -->
+        <TextBlock Grid.Row="2" x:Name="ErrorBannerTextBlock" FontSize="12" Foreground="{ThemeResource ErrorBrush}" TextWrapping="Wrap" Visibility="Collapsed" />
+    </Grid>
+</ContentDialog>

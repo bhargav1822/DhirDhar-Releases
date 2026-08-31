@@ -1,17 +1,6 @@
 # =============================================================================
-# DhirDhar Release Repository (.gitignore)
-# Policy: RELEASES ONLY - NO SOURCE CODE, NO PROJECT FILES, NO BUILD ARTIFACTS
+# DhirDhar Repository (.gitignore)
 # =============================================================================
-
-# Prevent Source Code and Solution Directories
-DhirDhar Solution/
-src/
-tests/
-scripts/
-tools/
-packages/
-Packages/
-icons/
 
 # Build Outputs and Intermediate Files
 [Bb]in/
@@ -22,20 +11,6 @@ Publish/
 Installer/
 TestResults/
 artifacts/
-
-# .NET / C# / XAML Source and Project Files
-*.cs
-*.xaml
-*.csproj
-*.sln
-*.slnx
-*.props
-*.targets
-*.iss
-*.manifest
-*.resw
-*.resx
-*.pri
 
 # User-specific files & IDE configuration
 .vs/
@@ -54,6 +29,7 @@ artifacts/
 *.sqlite
 *.sqlite3
 *.bak
+*.ddbackup
 
 # Logs, Diagnostics, and Temporary Files
 *.log
@@ -61,8 +37,6 @@ artifacts/
 *.temp
 *.binlog
 *.trx
-*.txt
-*.backup
 update.log
 
 # Certificates, Secrets, and Credentials
@@ -70,13 +44,9 @@ update.log
 *.p12
 *.key
 *.pem
-*.cer
-*.crt
 *client_secrets.json
 app_integrity.sig
 
 # Node / Scratch scripts
 node_modules/
-package.json
 package-lock.json
-*.py

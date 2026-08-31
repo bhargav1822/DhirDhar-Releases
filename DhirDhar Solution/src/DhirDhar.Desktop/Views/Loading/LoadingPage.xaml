@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Page
+    x:Class="DhirDhar.Desktop.Views.Loading.LoadingPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:converters="using:DhirDhar.Desktop.Converters"
+    Background="#0B1026"
+    Loaded="Page_Loaded">
+
+    <Page.Resources>
+        <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
+        <converters:InverseBoolToVisibilityConverter x:Key="InverseBoolToVisibilityConverter" />
+
+        <LinearGradientBrush x:Key="LoadingBarFillBrush" StartPoint="0,0" EndPoint="1,0">
+            <GradientStop Color="#3FAAFC" Offset="0" />
+            <GradientStop Color="#2E96FD" Offset="0.5" />
+            <GradientStop Color="#3F9CFD" Offset="1" />
+        </LinearGradientBrush>
+
+        <Style x:Key="LoadingProgressBarStyle" TargetType="ProgressBar">
+            <Setter Property="Minimum" Value="0" />
+            <Setter Property="Maximum" Value="100" />
+            <Setter Property="Padding" Value="0" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="BorderBrush" Value="#4A6FA5" />
+            <Setter Property="IsHitTestVisible" Value="False" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ProgressBar">
+                        <Grid x:Name="LayoutRoot">
+                            <VisualStateManager.VisualStateGroups>
+                                <VisualStateGroup x:Name="CommonStates">
+                                    <VisualState x:Name="Normal" />
+                                    <VisualState x:Name="Determinate" />
+                                    <VisualState x:Name="Updating" />
+                                    <VisualState x:Name="UpdatingError" />
+                                    <VisualState x:Name="Error" />
+                                    <VisualState x:Name="Paused" />
+                                    <VisualState x:Name="Indeterminate" />
+                                    <VisualState x:Name="IndeterminateError" />
+                                    <VisualState x:Name="IndeterminatePaused" />
+                                </VisualStateGroup>
+                            </VisualStateManager.VisualStateGroups>
+                            <Border x:Name="ProgressBarTrack"
+                                    Background="#99000000"
+                                    CornerRadius="4"
+                                    BorderBrush="{TemplateBinding BorderBrush}"
+                                    BorderThickness="{TemplateBinding BorderThickness}" />
+                            <Rectangle x:Name="DeterminateProgressBarGlowOuter"
+                                       HorizontalAlignment="Left"
+                                       VerticalAlignment="Stretch"
+                                       Margin="-1,-3,-1,-3"
+                                       Fill="#332E8BFF"
+                                       RadiusX="4"
+                                       RadiusY="4"
+                                       Width="{Binding ActualWidth, ElementName=DeterminateProgressBarIndicator}" />
+                            <Rectangle x:Name="DeterminateProgressBarGlowInner"
+                                       HorizontalAlignment="Left"
+                                       VerticalAlignment="Stretch"
+                                       Margin="0,-1,0,-1"
+                                       Fill="#552E8BFF"
+                                       RadiusX="4"
+                                       RadiusY="4"
+                                       Width="{Binding ActualWidth, ElementName=DeterminateProgressBarIndicator}" />
+                            <Rectangle x:Name="DeterminateProgressBarIndicator"
+                                       HorizontalAlignment="Left"
+                                       VerticalAlignment="Stretch"
+                                       Fill="{StaticResource LoadingBarFillBrush}"
+                                       RadiusX="4"
+                                       RadiusY="4" />
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Page.Resources>
+
+    <!-- Viewbox maintains the 709x473 reference aspect ratio uniformly -->
+    <Viewbox Stretch="Uniform">
+        <Grid x:Name="ReferenceCanvas" Width="709" Height="473">
+            <!-- Background Image - fills the 709x473 reference canvas exactly -->
+            <Image Source="ms-appx:///Assets/LoadingScreen.png"
+                   Stretch="Fill"
+                   HorizontalAlignment="Left"
+                   VerticalAlignment="Top" />
+
+            <!-- Loading DhirDhar... text at reference X=40, Y=348 -->
+            <TextBlock x:Name="LoadingText"
+                       Text="{x:Bind ViewModel.LoadingAppLabel, Mode=OneWay}"
+                       FontSize="12"
+                       FontWeight="SemiBold"
+                       Foreground="#F2F4F7"
+                       HorizontalAlignment="Left"
+                       VerticalAlignment="Top"
+                       Margin="40,348,0,0" />
+
+            <!-- Progress Bar at reference X=39, Y=368, Width=458, Height=13 -->
+            <ProgressBar x:Name="ProgressBar"
+                         Style="{StaticResource LoadingProgressBarStyle}"
+                         Value="{x:Bind ViewModel.ProgressPercentage, Mode=OneWay}"
+                         Width="458"
+                         Height="13"
+                         HorizontalAlignment="Left"
+                         VerticalAlignment="Top"
+                         Margin="39,368,0,0" />
+
+            <!-- Percentage text at reference X=503, Y=368 (to the right of bar) -->
+            <TextBlock x:Name="PercentageText"
+                       Text="{x:Bind ViewModel.FormattedProgressPercentage, Mode=OneWay}"
+                       FontSize="12"
+                       FontWeight="SemiBold"
+                       Foreground="#FFFFFF"
+                       HorizontalAlignment="Left"
+                       VerticalAlignment="Top"
+                       Margin="503,368,0,0" />
+
+            <!-- Database status with spinner at reference X=38, Y=398 (spinner), X=66, Y=400 (text) -->
+            <StackPanel x:Name="DatabaseStatusPanel"
+                        Orientation="Horizontal"
+                        HorizontalAlignment="Left"
+                        VerticalAlignment="Top"
+                        Margin="38,398,0,0"
+                        Spacing="6"
+                        Visibility="{x:Bind ViewModel.IsConnectingDatabase, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}">
+                <Grid Width="17" Height="17" RenderTransformOrigin="0.5,0.5">
+                    <Grid.RenderTransform>
+                        <RotateTransform x:Name="SpinnerRotation" />
+                    </Grid.RenderTransform>
+                    <Grid.Resources>
+                        <Storyboard x:Name="SpinnerStoryboard" RepeatBehavior="Forever">
+                            <DoubleAnimation Storyboard.TargetName="SpinnerRotation"
+                                             Storyboard.TargetProperty="Angle"
+                                             From="0"
+                                             To="360"
+                                             Duration="0:0:1.2" />
+                        </Storyboard>
+                    </Grid.Resources>
+                    <Ellipse Stroke="#3E9BFF"
+                             StrokeThickness="3"
+                             StrokeDashArray="3,6"
+                             StrokeDashCap="Round" />
+                </Grid>
+                <TextBlock Text="{x:Bind ViewModel.ConnectingDatabaseLabel, Mode=OneWay}"
+                           FontSize="12"
+                           Foreground="#F2F4F7"
+                           VerticalAlignment="Center"
+                           Margin="0,2,0,0" />
+            </StackPanel>
+
+            <!-- Error message -->
+            <TextBlock x:Name="ErrorText"
+                       Text="{x:Bind ViewModel.ErrorMessage, Mode=OneWay}"
+                       FontSize="9"
+                       FontWeight="SemiBold"
+                       Foreground="#F28B82"
+                       HorizontalAlignment="Left"
+                       VerticalAlignment="Top"
+                       Margin="40,425,0,0"
+                       MaxWidth="458"
+                       TextWrapping="Wrap"
+                       Visibility="{x:Bind ViewModel.HasFailed, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}" />
+
+            <!-- Version and copyright on the same row at the bottom -->
+            <StackPanel Orientation="Horizontal"
+                        Spacing="14"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Bottom"
+                        Margin="0,0,0,10">
+                <TextBlock Text="{x:Bind ViewModel.FormattedApplicationVersion, Mode=OneWay}"
+                           FontSize="10"
+                           Foreground="#B8C2D9"
+                           VerticalAlignment="Center" />
+                <TextBlock Text="{x:Bind ViewModel.CopyrightLabel, Mode=OneWay}"
+                           FontSize="9"
+                           Foreground="#8A94AB"
+                           VerticalAlignment="Center" />
+            </StackPanel>
+        </Grid>
+    </Viewbox>
+</Page>

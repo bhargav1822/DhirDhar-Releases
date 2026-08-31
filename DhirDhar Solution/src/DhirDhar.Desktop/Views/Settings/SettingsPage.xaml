@@ -1,0 +1,528 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Page
+    x:Class="DhirDhar.Desktop.Views.Settings.SettingsPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:converters="using:DhirDhar.Desktop.Converters"
+    xmlns:helpers="using:DhirDhar.Desktop.Helpers"
+    xmlns:controls="using:DhirDhar.Desktop.Controls"
+    Background="{ThemeResource ApplicationBackgroundBrush}">
+
+    <Page.Resources>
+        <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
+        <converters:InverseBoolToVisibilityConverter x:Key="InverseBoolToVisibilityConverter" />
+        <converters:InverseBoolConverter x:Key="InverseBoolConverter" />
+        <converters:StringToVisibilityConverter x:Key="StringToVisibilityConverter" />
+    </Page.Resources>
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <Grid Padding="24" RowSpacing="20">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+
+            <!-- 1. Header -->
+            <Grid Grid.Row="0">
+                <StackPanel Spacing="4">
+                    <TextBlock Text="{x:Bind ViewModel.PageTitle, Mode=OneWay}" Style="{StaticResource HeadingTextStyle}" />
+                    <TextBlock Text="{x:Bind ViewModel.PageSubtitle, Mode=OneWay}" Style="{StaticResource SubtleTextStyle}" />
+                </StackPanel>
+            </Grid>
+
+            <!-- Loading Indicator (Top subtle bar, doesn't hide content) -->
+            <ProgressBar Grid.Row="1" IsIndeterminate="True"
+                         Visibility="{x:Bind ViewModel.IsLoading, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}"
+                         HorizontalAlignment="Stretch" Height="3" />
+
+            <!-- Main Content Container -->
+            <StackPanel Grid.Row="2" Spacing="20">
+
+                <!-- 2. Language Settings Card -->
+                <Border Background="{ThemeResource SurfaceBackgroundBrush}" CornerRadius="12" Padding="20" BorderBrush="{ThemeResource BorderBrush}" BorderThickness="1">
+                    <StackPanel Spacing="16">
+                        <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                            <FontIcon Glyph="&#xE775;" FontSize="16" Foreground="{ThemeResource PrimaryBrush}" VerticalAlignment="Center" />
+                            <TextBlock Text="{x:Bind ViewModel.LanguageSectionLabel, Mode=OneWay}" FontSize="16" FontWeight="SemiBold" Foreground="{ThemeResource ApplicationForegroundBrush}" VerticalAlignment="Center" />
+                        </StackPanel>
+
+                        <StackPanel Spacing="6">
+                            <TextBlock Text="{x:Bind ViewModel.ApplicationLanguageLabel, Mode=OneWay}" FontSize="12" FontWeight="SemiBold" Foreground="{ThemeResource SubtleForegroundBrush}" />
+                            <ComboBox ItemsSource="{x:Bind ViewModel.LanguageOptions, Mode=OneWay}"
+                                      SelectedValue="{x:Bind ViewModel.SelectedLanguage, Mode=TwoWay}"
+                                      SelectedValuePath="Code"
+                                      DisplayMemberPath="DisplayName"
+                                      AutomationProperties.Name="{x:Bind ViewModel.ApplicationLanguageLabel, Mode=OneWay}"
+                                      Width="280" HorizontalAlignment="Left" Height="40" CornerRadius="8" />
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+
+                <!-- 3. General Settings Card -->
+                <Border Background="{ThemeResource SurfaceBackgroundBrush}" CornerRadius="12" Padding="20" BorderBrush="{ThemeResource BorderBrush}" BorderThickness="1">
+                    <StackPanel Spacing="16">
+                        <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                            <FontIcon Glyph="&#xE713;" FontSize="16" Foreground="{ThemeResource PrimaryBrush}" VerticalAlignment="Center" />
+                            <TextBlock Text="{x:Bind ViewModel.GeneralSettingsLabel, Mode=OneWay}" FontSize="16" FontWeight="SemiBold" Foreground="{ThemeResource ApplicationForegroundBrush}" VerticalAlignment="Center" />
+                        </StackPanel>
+
+                        <Grid ColumnSpacing="16" RowSpacing="16">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+
+                            <StackPanel Grid.Column="0" Spacing="6">
+                                <TextBlock Text="{x:Bind ViewModel.DateFormatLabel, Mode=OneWay}" FontSize="12" FontWeight="SemiBold" Foreground="{ThemeResource SubtleForegroundBrush}" />
+                                <ComboBox ItemsSource="{x:Bind ViewModel.DateFormats, Mode=OneWay}"
+                                          SelectedItem="{x:Bind ViewModel.SelectedDateFormat, Mode=TwoWay}"
+                                          HorizontalAlignment="Stretch" Height="40" CornerRadius="8" />
+                            </StackPanel>
+
+                            <StackPanel Grid.Column="1" Spacing="6">
+                                <TextBlock Text="{x:Bind ViewModel.CurrencyLabel, Mode=OneWay}" FontSize="12" FontWeight="SemiBold" Foreground="{ThemeResource SubtleForegroundBrush}" />
+                                <ComboBox ItemsSource="{x:Bind ViewModel.Currencies, Mode=OneWay}"
+                                          SelectedItem="{x:Bind ViewModel.SelectedCurrency, Mode=TwoWay}"
+                                          HorizontalAlignment="Stretch" Height="40" CornerRadius="8" />
+                            </StackPanel>
+                        </Grid>
+                    </StackPanel>
+                </Border>
+
+                <!-- 3. Business Profile Card -->
+                <Border Background="{ThemeResource SurfaceBackgroundBrush}" CornerRadius="12" Padding="20" BorderBrush="{ThemeResource BorderBrush}" BorderThickness="1">
+                    <StackPanel Spacing="16">
+                        <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                            <FontIcon Glyph="&#xEC06;" FontSize="16" Foreground="{ThemeResource PrimaryBrush}" VerticalAlignment="Center" />
+                            <TextBlock Text="{x:Bind ViewModel.BusinessProfileLabel, Mode=OneWay}" FontSize="16" FontWeight="SemiBold" Foreground="{ThemeResource ApplicationForegroundBrush}" VerticalAlignment="Center" />
+                        </StackPanel>
+
+                        <Grid ColumnSpacing="16" RowSpacing="12">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="180" />
+                            </Grid.ColumnDefinitions>
+
+                            <StackPanel Grid.Column="0" Spacing="6">
+                                <TextBlock Text="{x:Bind ViewModel.BusinessNameLabel, Mode=OneWay}" FontSize="12" FontWeight="SemiBold" Foreground="{ThemeResource SubtleForegroundBrush}" />
+                                <controls:DhirDharPhoneticTextBox Text="{x:Bind ViewModel.BusinessName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                         PlaceholderText="{x:Bind ViewModel.BusinessNamePlaceholder, Mode=OneWay}"
+                                         AutomationProperties.Name="{x:Bind ViewModel.BusinessNameLabel, Mode=OneWay}"
+                                         Height="40" CornerRadius="8" />
+                            </StackPanel>
+
+                            <StackPanel Grid.Column="1" Spacing="6">
+                                <TextBlock Text="{x:Bind ViewModel.BorrowerNumberPrefixLabel, Mode=OneWay}" FontSize="12" FontWeight="SemiBold" Foreground="{ThemeResource SubtleForegroundBrush}" />
+                                <Grid Height="40" HorizontalAlignment="Stretch">
+                                    <Border Background="{ThemeResource PrimaryBrush}" Opacity="0.12" CornerRadius="8" />
+                                    <TextBlock Text="{x:Bind ViewModel.BorrowerNumberPrefix, Mode=OneWay}"
+                                               FontSize="16" FontWeight="Bold" Foreground="{ThemeResource PrimaryBrush}"
+                                               VerticalAlignment="Center" HorizontalAlignment="Center" />
+                                </Grid>
+                            </StackPanel>
+                        </Grid>
+                    </StackPanel>
+                </Border>
+
+                <!-- 4. Appearance Card -->
+                <Border Background="{ThemeResource SurfaceBackgroundBrush}" CornerRadius="12" Padding="20" BorderBrush="{ThemeResource BorderBrush}" BorderThickness="1">
+                    <StackPanel Spacing="16">
+                        <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                            <FontIcon Glyph="&#xE790;" FontSize="16" Foreground="{ThemeResource PrimaryBrush}" VerticalAlignment="Center" />
+                            <TextBlock Text="{x:Bind ViewModel.AppearanceLabel, Mode=OneWay}" FontSize="16" FontWeight="SemiBold" Foreground="{ThemeResource ApplicationForegroundBrush}" VerticalAlignment="Center" />
+                        </StackPanel>
+
+                        <StackPanel Spacing="6">
+                            <TextBlock Text="{x:Bind ViewModel.ThemeLabel, Mode=OneWay}" FontSize="12" FontWeight="SemiBold" Foreground="{ThemeResource SubtleForegroundBrush}" />
+                            <ComboBox ItemsSource="{x:Bind ViewModel.ThemeOptions, Mode=OneWay}"
+                                      SelectedValue="{x:Bind ViewModel.SelectedTheme, Mode=TwoWay}"
+                                      SelectedValuePath="Value"
+                                      DisplayMemberPath="Label"
+                                      Width="240" HorizontalAlignment="Left" Height="40" CornerRadius="8" />
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+
+                <!-- 5. Printing & POS Paper Settings Card -->
+                <Border Background="{ThemeResource SurfaceBackgroundBrush}" CornerRadius="12" Padding="20" BorderBrush="{ThemeResource BorderBrush}" BorderThickness="1">
+                    <StackPanel Spacing="16">
+                        <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                            <FontIcon Glyph="&#xE749;" FontSize="16" Foreground="{ThemeResource PrimaryBrush}" VerticalAlignment="Center" />
+                            <TextBlock Text="{x:Bind ViewModel.PrintingSettingsLabel, Mode=OneWay}" FontSize="16" FontWeight="SemiBold" Foreground="{ThemeResource ApplicationForegroundBrush}" VerticalAlignment="Center" />
+                        </StackPanel>
+
+                        <Grid ColumnSpacing="16" RowSpacing="16">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+
+                            <!-- Paper Size Selector -->
+                            <StackPanel Grid.Column="0" Spacing="6">
+                                <TextBlock Text="{x:Bind ViewModel.PaperSizeLabel, Mode=OneWay}" FontSize="12" FontWeight="SemiBold" Foreground="{ThemeResource SubtleForegroundBrush}" />
+                                <ComboBox ItemsSource="{x:Bind ViewModel.PaperSizeOptions, Mode=OneWay}"
+                                          SelectedValue="{x:Bind ViewModel.SelectedPaperSize, Mode=TwoWay}"
+                                          SelectedValuePath="Value"
+                                          DisplayMemberPath="Label"
+                                          HorizontalAlignment="Stretch" Height="40" CornerRadius="8" />
+                            </StackPanel>
+
+                            <!-- Printer Selector -->
+                            <StackPanel Grid.Column="1" Spacing="6">
+                                <TextBlock Text="{x:Bind ViewModel.SelectedPrinterLabel, Mode=OneWay}" FontSize="12" FontWeight="SemiBold" Foreground="{ThemeResource SubtleForegroundBrush}" />
+                                <ComboBox ItemsSource="{x:Bind ViewModel.PrinterOptions, Mode=OneWay}"
+                                          SelectedValue="{x:Bind ViewModel.SelectedPrinter, Mode=TwoWay}"
+                                          SelectedValuePath="Value"
+                                          DisplayMemberPath="Label"
+                                          HorizontalAlignment="Stretch" Height="40" CornerRadius="8" />
+                            </StackPanel>
+                        </Grid>
+
+                        <!-- Custom Paper Width (when Custom POS selected) -->
+                        <StackPanel Spacing="6" Visibility="{x:Bind ViewModel.IsCustomPaperWidthVisible, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}">
+                            <TextBlock Text="{x:Bind ViewModel.CustomPaperWidthMmLabel, Mode=OneWay}" FontSize="12" FontWeight="SemiBold" Foreground="{ThemeResource SubtleForegroundBrush}" />
+                            <NumberBox Value="{x:Bind ViewModel.CustomPaperWidthMm, Mode=TwoWay}"
+                                       SmallChange="5" LargeChange="10" Minimum="30" Maximum="300"
+                                       SpinButtonPlacementMode="Inline" Width="200" HorizontalAlignment="Left" Height="40" CornerRadius="8" />
+                        </StackPanel>
+
+                        <!-- Auto-Cut Paper Checkbox & Test Print Button -->
+                        <Grid ColumnSpacing="16" Margin="0,4,0,0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+
+                            <CheckBox Grid.Column="0" Content="{x:Bind ViewModel.AutoCutPaperLabel, Mode=OneWay}"
+                                      IsChecked="{x:Bind ViewModel.AutoCutPaperEnabled, Mode=TwoWay}"
+                                      IsEnabled="{x:Bind ViewModel.IsAutoCutSupported, Mode=OneWay}"
+                                      FontSize="13" VerticalAlignment="Center" />
+
+                            <Button Grid.Column="1" Style="{StaticResource HeaderActionButtonStyle}"
+                                    Command="{x:Bind ViewModel.PrintTestReceiptCommand, Mode=OneWay}"
+                                    IsEnabled="{x:Bind ViewModel.CanPrintTestReceipt, Mode=OneWay}"
+                                    HorizontalAlignment="Right" Height="36" Padding="14,0">
+                                <StackPanel Orientation="Horizontal" Spacing="8">
+                                    <FontIcon Glyph="&#xE749;" FontSize="14" />
+                                    <TextBlock Text="{x:Bind ViewModel.PrintTestReceiptLabel, Mode=OneWay}" />
+                                </StackPanel>
+                            </Button>
+                        </Grid>
+                    </StackPanel>
+                </Border>
+
+                <!-- 6. Application Updates Card -->
+                <Border Background="{ThemeResource SurfaceBackgroundBrush}" CornerRadius="12" Padding="20" BorderBrush="{ThemeResource BorderBrush}" BorderThickness="1">
+                    <StackPanel Spacing="16">
+                        <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                            <FontIcon Glyph="&#xE895;" FontSize="16" Foreground="{ThemeResource PrimaryBrush}" VerticalAlignment="Center" />
+                            <TextBlock Text="{x:Bind ViewModel.ApplicationUpdatesLabel, Mode=OneWay}" FontSize="16" FontWeight="SemiBold" Foreground="{ThemeResource ApplicationForegroundBrush}" VerticalAlignment="Center" />
+                        </StackPanel>
+
+                        <StackPanel Spacing="10">
+                            <CheckBox Content="{x:Bind ViewModel.AutoCheckUpdatesLabel, Mode=OneWay}"
+                                      IsChecked="{x:Bind ViewModel.AutoCheckUpdatesEnabled, Mode=TwoWay}"
+                                      FontSize="13" />
+                            <CheckBox Content="{x:Bind ViewModel.AutoInstallUpdatesLabel, Mode=OneWay}"
+                                      IsChecked="{x:Bind ViewModel.AutoInstallUpdatesEnabled, Mode=TwoWay}"
+                                      FontSize="13" />
+                        </StackPanel>
+
+                        <StackPanel Spacing="4">
+                            <TextBlock Text="{x:Bind ViewModel.CurrentVersionLabel, Mode=OneWay}" FontSize="12" Foreground="{ThemeResource SubtleForegroundBrush}" />
+                            <Grid HorizontalAlignment="Left">
+                                <Border Background="{ThemeResource PrimaryBrush}" Opacity="0.15" CornerRadius="8" />
+                                <TextBlock Text="{x:Bind ViewModel.AppVersion, Mode=OneWay}" FontSize="13" FontWeight="SemiBold" Foreground="{ThemeResource PrimaryBrush}" Padding="12,8" />
+                            </Grid>
+                        </StackPanel>
+
+                        <!-- Update Status Message -->
+                        <TextBlock Text="{x:Bind ViewModel.UpdateStatusMessage, Mode=OneWay}"
+                                   FontSize="13"
+                                   Foreground="{ThemeResource ApplicationForegroundBrush}"
+                                   TextWrapping="Wrap"
+                                   Visibility="{x:Bind ViewModel.UpdateStatusMessage, Mode=OneWay, Converter={StaticResource StringToVisibilityConverter}}" />
+
+                        <!-- Download Progress Bar -->
+                        <StackPanel Spacing="6" Visibility="{x:Bind ViewModel.IsDownloading, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}">
+                            <ProgressBar Value="{x:Bind ViewModel.DownloadProgressPercent, Mode=OneWay}" Maximum="100" Height="6" CornerRadius="3" />
+                            <TextBlock Text="{x:Bind ViewModel.FormattedDownloadProgress, Mode=OneWay}" FontSize="12" Foreground="{ThemeResource SubtleForegroundBrush}" HorizontalAlignment="Right" />
+                        </StackPanel>
+
+                        <!-- Release Notes Section -->
+                        <StackPanel Spacing="6" Visibility="{x:Bind ViewModel.HasReleaseNotes, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}">
+                            <TextBlock Text="{x:Bind ViewModel.ReleaseNotesLabel, Mode=OneWay}" FontSize="12" FontWeight="SemiBold" Foreground="{ThemeResource ApplicationForegroundBrush}" />
+                            <Border Background="{ThemeResource ApplicationBackgroundBrush}" BorderBrush="{ThemeResource BorderBrush}" BorderThickness="1" CornerRadius="8" Padding="12" MaxHeight="140">
+                                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                                    <TextBlock Text="{x:Bind ViewModel.ReleaseNotes, Mode=OneWay}" FontSize="12" Foreground="{ThemeResource SubtleForegroundBrush}" TextWrapping="Wrap" />
+                                </ScrollViewer>
+                            </Border>
+                        </StackPanel>
+
+                        <!-- Buttons Row -->
+                        <StackPanel Orientation="Horizontal" Spacing="12" HorizontalAlignment="Left" VerticalAlignment="Center">
+                            <Button Content="{x:Bind ViewModel.CheckForUpdatesLabel, Mode=OneWay}"
+                                    Style="{StaticResource SecondaryButtonStyle}"
+                                    Command="{x:Bind ViewModel.CheckForUpdatesCommand, Mode=OneWay}"
+                                    IsEnabled="{x:Bind ViewModel.IsUpdateCheckInProgress, Mode=OneWay, Converter={StaticResource InverseBoolConverter}}"
+                                    VerticalAlignment="Center" />
+
+                            <Button Content="{x:Bind ViewModel.InstallButtonText, Mode=OneWay}"
+                                    Style="{StaticResource PrimaryButtonStyle}"
+                                    Command="{x:Bind ViewModel.UpdateNowCommand, Mode=OneWay}"
+                                    Visibility="{x:Bind ViewModel.IsUpdateAvailable, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}"
+                                    VerticalAlignment="Center" />
+
+                            <ProgressRing IsActive="{x:Bind ViewModel.IsUpdateCheckInProgress, Mode=OneWay}"
+                                          Visibility="{x:Bind ViewModel.IsUpdateCheckInProgress, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}"
+                                          Width="20" Height="20" VerticalAlignment="Center" />
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+
+                <!-- 7. System & Financial Year Card -->
+                <Border Background="{ThemeResource SurfaceBackgroundBrush}" CornerRadius="12" Padding="20" BorderBrush="{ThemeResource BorderBrush}" BorderThickness="1">
+                    <StackPanel Spacing="16">
+                        <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                            <FontIcon Glyph="&#xE8C7;" FontSize="16" Foreground="{ThemeResource PrimaryBrush}" VerticalAlignment="Center" />
+                            <TextBlock Text="{x:Bind ViewModel.FinancialSystemConfigLabel, Mode=OneWay}" FontSize="16" FontWeight="SemiBold" Foreground="{ThemeResource ApplicationForegroundBrush}" VerticalAlignment="Center" />
+                        </StackPanel>
+
+                        <Grid ColumnSpacing="16" RowSpacing="12">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+
+                            <StackPanel Grid.Column="0" Spacing="4">
+                                <TextBlock Text="{x:Bind ViewModel.CurrentFinancialYearLabel, Mode=OneWay}" FontSize="12" Foreground="{ThemeResource SubtleForegroundBrush}" />
+                                <Grid HorizontalAlignment="Left">
+                                    <Border Background="{ThemeResource PrimaryBrush}" Opacity="0.15" CornerRadius="6" />
+                                    <TextBlock Text="{x:Bind ViewModel.ActiveFinancialYear, Mode=OneWay}" FontSize="14" FontWeight="SemiBold" Foreground="{ThemeResource PrimaryBrush}" Padding="12,6" />
+                                </Grid>
+                            </StackPanel>
+
+                            <StackPanel Grid.Column="1" Spacing="4">
+                                <TextBlock Text="{x:Bind ViewModel.InterestEngineLabel, Mode=OneWay}" FontSize="12" Foreground="{ThemeResource SubtleForegroundBrush}" />
+                                <Grid HorizontalAlignment="Left">
+                                    <Border Background="{ThemeResource SuccessBrush}" Opacity="0.15" CornerRadius="6" />
+                                    <TextBlock Text="{x:Bind ViewModel.InterestConfigInfo, Mode=OneWay}" FontSize="14" FontWeight="SemiBold" Foreground="{ThemeResource SuccessBrush}" Padding="12,6" />
+                                </Grid>
+                            </StackPanel>
+                        </Grid>
+                    </StackPanel>
+                </Border>
+
+                <!-- 8. License & Activation Card -->
+                <Border Background="{ThemeResource SurfaceBackgroundBrush}" CornerRadius="12" Padding="20" BorderBrush="{ThemeResource BorderBrush}" BorderThickness="1">
+                    <StackPanel Spacing="16">
+                        <Grid ColumnDefinitions="*,Auto">
+                            <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                                <FontIcon Glyph="&#xEC05;" FontSize="16" Foreground="{ThemeResource PrimaryBrush}" VerticalAlignment="Center" />
+                                <StackPanel Spacing="2">
+                                    <TextBlock Text="{x:Bind ViewModel.LicenseInformationLabel, Mode=OneWay}" FontSize="16" FontWeight="SemiBold" Foreground="{ThemeResource ApplicationForegroundBrush}" />
+                                    <TextBlock Text="{x:Bind ViewModel.SinglePcAnnualOfflineLicenseLabel, Mode=OneWay}" FontSize="12" Foreground="{ThemeResource SubtleForegroundBrush}"/>
+                                </StackPanel>
+                            </StackPanel>
+
+                            <Button Grid.Column="1" Click="OnRenewLicenseClick" Content="{x:Bind ViewModel.RenewChangeLicenseLabel, Mode=OneWay}" Height="36" CornerRadius="8" Style="{StaticResource SecondaryButtonStyle}" VerticalAlignment="Center"/>
+                        </Grid>
+
+                        <Grid ColumnDefinitions="*,*,*" RowDefinitions="Auto,Auto" RowSpacing="12" ColumnSpacing="16">
+                            <StackPanel Grid.Row="0" Grid.Column="0" Spacing="2">
+                                <TextBlock Text="{x:Bind ViewModel.LicenseStatusLabel, Mode=OneWay}" FontSize="11" Foreground="{ThemeResource SubtleForegroundBrush}"/>
+                                <TextBlock Text="{x:Bind ViewModel.LicenseStatusText, Mode=OneWay}" FontSize="14" FontWeight="SemiBold" Foreground="{ThemeResource ApplicationForegroundBrush}"/>
+                            </StackPanel>
+
+                            <StackPanel Grid.Row="0" Grid.Column="1" Spacing="2">
+                                <TextBlock Text="{x:Bind ViewModel.LicensedToLabel, Mode=OneWay}" FontSize="11" Foreground="{ThemeResource SubtleForegroundBrush}"/>
+                                <TextBlock Text="{x:Bind ViewModel.LicenseCustomerName, Mode=OneWay}" FontSize="14" FontWeight="SemiBold" Foreground="{ThemeResource ApplicationForegroundBrush}"/>
+                            </StackPanel>
+
+                            <StackPanel Grid.Row="0" Grid.Column="2" Spacing="2">
+                                <TextBlock Text="{x:Bind ViewModel.LicenseIdLabel, Mode=OneWay}" FontSize="11" Foreground="{ThemeResource SubtleForegroundBrush}"/>
+                                <TextBlock Text="{x:Bind ViewModel.LicenseId, Mode=OneWay}" FontSize="14" FontWeight="SemiBold" Foreground="{ThemeResource ApplicationForegroundBrush}"/>
+                            </StackPanel>
+
+                            <StackPanel Grid.Row="1" Grid.Column="0" Spacing="2">
+                                <TextBlock Text="{x:Bind ViewModel.ValidUntilLabel, Mode=OneWay}" FontSize="11" Foreground="{ThemeResource SubtleForegroundBrush}"/>
+                                <TextBlock Text="{x:Bind ViewModel.LicenseExpiresAt, Mode=OneWay}" FontSize="14" FontWeight="SemiBold" Foreground="{ThemeResource ApplicationForegroundBrush}"/>
+                            </StackPanel>
+
+                            <StackPanel Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2" Spacing="2">
+                                <TextBlock Text="{x:Bind ViewModel.HardwareDeviceIdLabel, Mode=OneWay}" FontSize="11" Foreground="{ThemeResource SubtleForegroundBrush}"/>
+                                <TextBlock Text="{x:Bind ViewModel.LicenseDeviceId, Mode=OneWay}" FontSize="13" FontFamily="Consolas, Segoe UI Mono" Foreground="{ThemeResource ApplicationForegroundBrush}"/>
+                            </StackPanel>
+                        </Grid>
+                    </StackPanel>
+                </Border>
+
+                <!-- 9. Security & Data Encryption (E2EE) Card -->
+                <Border Background="{ThemeResource SurfaceBackgroundBrush}" CornerRadius="12" Padding="20" BorderBrush="{ThemeResource BorderBrush}" BorderThickness="1">
+                    <StackPanel Spacing="16">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                                <FontIcon Glyph="&#xE72E;" FontSize="16" Foreground="{ThemeResource PrimaryBrush}" VerticalAlignment="Center" />
+                                <StackPanel Spacing="2">
+                                    <TextBlock Text="{x:Bind ViewModel.SecurityAndEncryptionLabel, Mode=OneWay}" FontSize="16" FontWeight="SemiBold" Foreground="{ThemeResource ApplicationForegroundBrush}" />
+                                    <TextBlock Text="{x:Bind ViewModel.SecurityAndEncryptionSubtitleLabel, Mode=OneWay}" FontSize="12" Foreground="{ThemeResource SubtleForegroundBrush}" TextWrapping="Wrap"/>
+                                </StackPanel>
+                            </StackPanel>
+                            <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                                <Button Content="{x:Bind ViewModel.VerifyEncryptionLabel, Mode=OneWay}" Command="{x:Bind ViewModel.VerifyEncryptionCommand, Mode=OneWay}" Height="36" CornerRadius="8" Style="{StaticResource SecondaryButtonStyle}" />
+                                <Button Content="{x:Bind ViewModel.ExportRecoveryKeyLabel, Mode=OneWay}" Command="{x:Bind ViewModel.ExportRecoveryKeyCommand, Mode=OneWay}" Height="36" CornerRadius="8" Style="{StaticResource SecondaryButtonStyle}" />
+                            </StackPanel>
+                        </Grid>
+
+                        <Grid ColumnDefinitions="*,*,*" RowDefinitions="Auto,Auto" RowSpacing="12" ColumnSpacing="16">
+                            <StackPanel Grid.Row="0" Grid.Column="0" Spacing="2">
+                                <TextBlock Text="{x:Bind ViewModel.EncryptionStatusLabel, Mode=OneWay}" FontSize="11" Foreground="{ThemeResource SubtleForegroundBrush}"/>
+                                <TextBlock Text="{x:Bind ViewModel.EncryptionStatusValue, Mode=OneWay}" FontSize="14" FontWeight="SemiBold" Foreground="#22C55E"/>
+                            </StackPanel>
+
+                            <StackPanel Grid.Row="0" Grid.Column="1" Spacing="2">
+                                <TextBlock Text="{x:Bind ViewModel.DatabaseEncryptionLabel, Mode=OneWay}" FontSize="11" Foreground="{ThemeResource SubtleForegroundBrush}"/>
+                                <TextBlock Text="{x:Bind ViewModel.DatabaseEncryptionValue, Mode=OneWay}" FontSize="14" FontWeight="SemiBold" Foreground="{ThemeResource ApplicationForegroundBrush}"/>
+                            </StackPanel>
+
+                            <StackPanel Grid.Row="0" Grid.Column="2" Spacing="2">
+                                <TextBlock Text="{x:Bind ViewModel.BackupEncryptionLabel, Mode=OneWay}" FontSize="11" Foreground="{ThemeResource SubtleForegroundBrush}"/>
+                                <TextBlock Text="{x:Bind ViewModel.BackupEncryptionValue, Mode=OneWay}" FontSize="14" FontWeight="SemiBold" Foreground="{ThemeResource ApplicationForegroundBrush}"/>
+                            </StackPanel>
+
+                            <StackPanel Grid.Row="1" Grid.Column="0" Spacing="2">
+                                <TextBlock Text="{x:Bind ViewModel.KeyStorageLabel, Mode=OneWay}" FontSize="11" Foreground="{ThemeResource SubtleForegroundBrush}"/>
+                                <TextBlock Text="{x:Bind ViewModel.KeyStorageValue, Mode=OneWay}" FontSize="14" FontWeight="SemiBold" Foreground="{ThemeResource ApplicationForegroundBrush}"/>
+                            </StackPanel>
+
+                            <StackPanel Grid.Row="1" Grid.Column="1" Spacing="2">
+                                <TextBlock Text="{x:Bind ViewModel.EncryptionVersionLabel, Mode=OneWay}" FontSize="11" Foreground="{ThemeResource SubtleForegroundBrush}"/>
+                                <TextBlock Text="{x:Bind ViewModel.EncryptionVersionValue, Mode=OneWay}" FontSize="14" FontWeight="SemiBold" Foreground="{ThemeResource ApplicationForegroundBrush}"/>
+                            </StackPanel>
+
+                            <StackPanel Grid.Row="1" Grid.Column="2" Spacing="2">
+                                <TextBlock Text="{x:Bind ViewModel.LastVerificationLabel, Mode=OneWay}" FontSize="11" Foreground="{ThemeResource SubtleForegroundBrush}"/>
+                                <TextBlock Text="{x:Bind ViewModel.LastVerificationValue, Mode=OneWay}" FontSize="14" FontWeight="SemiBold" Foreground="{ThemeResource ApplicationForegroundBrush}"/>
+                            </StackPanel>
+                        </Grid>
+
+                        <!-- Recovery Key Display Banner (When exported) -->
+                        <Border Background="{ThemeResource LayerFillColorDefaultBrush}"
+                                BorderBrush="{ThemeResource PrimaryBrush}"
+                                BorderThickness="1"
+                                CornerRadius="8"
+                                Padding="14"
+                                Visibility="{x:Bind ViewModel.HasRecoveryKeyDisplay, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}">
+                            <StackPanel Spacing="6">
+                                <TextBlock Text="Disaster Recovery Key (Keep this secret and secure):" FontWeight="SemiBold" FontSize="12" Foreground="{ThemeResource PrimaryBrush}" />
+                                <TextBox Text="{x:Bind ViewModel.RecoveryKeyDisplay, Mode=OneWay}" IsReadOnly="True" FontFamily="Consolas, Segoe UI Mono" FontSize="15" FontWeight="Bold" Background="Transparent" BorderThickness="0" />
+                                <TextBlock Text="This 256-bit key allows recovering your encrypted database and backups on any computer. Do not share it with unauthorized individuals." FontSize="11" Foreground="{ThemeResource SubtleForegroundBrush}" TextWrapping="Wrap" />
+                            </StackPanel>
+                        </Border>
+
+                        <!-- Verification status banner -->
+                        <TextBlock Text="{x:Bind ViewModel.EncryptionVerificationMessage, Mode=OneWay}"
+                                   FontSize="12" FontWeight="SemiBold" Foreground="#22C55E"
+                                   Visibility="{x:Bind ViewModel.EncryptionVerificationMessage, Mode=OneWay, Converter={StaticResource StringToVisibilityConverter}}" />
+                    </StackPanel>
+                </Border>
+
+                <!-- 10. Data Integrity Card -->
+                <Border Background="{ThemeResource SurfaceBackgroundBrush}" CornerRadius="12" Padding="20" BorderBrush="{ThemeResource BorderBrush}" BorderThickness="1">
+                    <StackPanel Spacing="16">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                                <FontIcon Glyph="&#xEA18;" FontSize="16" Foreground="{ThemeResource PrimaryBrush}" VerticalAlignment="Center" />
+                                <StackPanel Spacing="2">
+                                    <TextBlock Text="{x:Bind ViewModel.DataIntegrityLabel, Mode=OneWay}" FontSize="16" FontWeight="SemiBold" Foreground="{ThemeResource ApplicationForegroundBrush}" />
+                                    <TextBlock Text="{x:Bind ViewModel.DataIntegritySubtitleLabel, Mode=OneWay}" FontSize="12" Foreground="{ThemeResource SubtleForegroundBrush}"/>
+                                </StackPanel>
+                            </StackPanel>
+                            <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
+                                <ProgressRing IsActive="{x:Bind ViewModel.IsIntegrityScanning, Mode=OneWay}" Width="20" Height="20" Visibility="{x:Bind ViewModel.IsIntegrityScanning, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}" />
+                                <Button Content="{x:Bind ViewModel.RunFullScanLabel, Mode=OneWay}" Command="{x:Bind ViewModel.RunFullScanCommand, Mode=OneWay}" Height="36" CornerRadius="8" Style="{StaticResource SecondaryButtonStyle}" />
+                            </StackPanel>
+                        </Grid>
+
+                        <Grid ColumnDefinitions="*,*,*" RowDefinitions="Auto,Auto" RowSpacing="12" ColumnSpacing="16">
+                            <StackPanel Grid.Row="0" Grid.Column="0" Spacing="2">
+                                <TextBlock Text="{x:Bind ViewModel.IntegrityStatusLabel, Mode=OneWay}" FontSize="11" Foreground="{ThemeResource SubtleForegroundBrush}"/>
+                                <TextBlock Text="{x:Bind ViewModel.OverallStatusDisplay, Mode=OneWay}" FontSize="14" FontWeight="SemiBold" Foreground="#22C55E"/>
+                            </StackPanel>
+
+                            <StackPanel Grid.Row="0" Grid.Column="1" Spacing="2">
+                                <TextBlock Text="{x:Bind ViewModel.ScanSummaryLabel, Mode=OneWay}" FontSize="11" Foreground="{ThemeResource SubtleForegroundBrush}"/>
+                                <TextBlock Text="{x:Bind ViewModel.IntegritySummaryDisplay, Mode=OneWay}" FontSize="14" FontWeight="SemiBold" Foreground="{ThemeResource ApplicationForegroundBrush}"/>
+                            </StackPanel>
+
+                            <StackPanel Grid.Row="0" Grid.Column="2" Spacing="2">
+                                <TextBlock Text="{x:Bind ViewModel.TotalIssuesLabel, Mode=OneWay}" FontSize="11" Foreground="{ThemeResource SubtleForegroundBrush}"/>
+                                <TextBlock Text="{x:Bind ViewModel.TotalIssuesDisplay, Mode=OneWay}" FontSize="14" FontWeight="SemiBold" Foreground="{ThemeResource ApplicationForegroundBrush}"/>
+                            </StackPanel>
+
+                            <StackPanel Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3" Spacing="2">
+                                <TextBlock Text="{x:Bind ViewModel.ScannedAtLabel, Mode=OneWay}" FontSize="11" Foreground="{ThemeResource SubtleForegroundBrush}"/>
+                                <TextBlock Text="{x:Bind ViewModel.ScannedAtDisplay, Mode=OneWay}" FontSize="13" Foreground="{ThemeResource SubtleForegroundBrush}"/>
+                            </StackPanel>
+                        </Grid>
+
+                        <!-- Scan Status / Completion Banner -->
+                        <TextBlock Text="{x:Bind ViewModel.IntegrityStatusMessage, Mode=OneWay}"
+                                   FontSize="12" FontWeight="SemiBold" Foreground="{ThemeResource PrimaryBrush}"
+                                   Visibility="{x:Bind ViewModel.IntegrityStatusMessage, Mode=OneWay, Converter={StaticResource StringToVisibilityConverter}}" />
+                    </StackPanel>
+                </Border>
+
+                <!-- 11. Application Information Card -->
+                <Border Background="{ThemeResource SurfaceBackgroundBrush}" CornerRadius="12" Padding="20" BorderBrush="{ThemeResource BorderBrush}" BorderThickness="1">
+                    <StackPanel Spacing="12">
+                        <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                            <FontIcon Glyph="&#xE946;" FontSize="16" Foreground="{ThemeResource PrimaryBrush}" VerticalAlignment="Center" />
+                            <TextBlock Text="{x:Bind ViewModel.ApplicationInformationLabel, Mode=OneWay}" FontSize="16" FontWeight="SemiBold" Foreground="{ThemeResource ApplicationForegroundBrush}" VerticalAlignment="Center" />
+                        </StackPanel>
+
+                        <StackPanel Spacing="4">
+                            <TextBlock Text="{x:Bind ViewModel.AppName, Mode=OneWay}" FontSize="15" FontWeight="Bold" Foreground="{ThemeResource ApplicationForegroundBrush}" />
+                            <TextBlock Text="{x:Bind ViewModel.AppVersion, Mode=OneWay}" FontSize="13" Foreground="{ThemeResource SubtleForegroundBrush}" />
+                            <TextBlock Text="{x:Bind ViewModel.CopyrightText, Mode=OneWay}" FontSize="12" Foreground="{ThemeResource SubtleForegroundBrush}" Margin="0,4,0,0" />
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+
+                <!-- 12. Reset Settings Section Card -->
+                <Border Background="{ThemeResource SurfaceBackgroundBrush}" CornerRadius="12" Padding="20" BorderBrush="{ThemeResource BorderBrush}" BorderThickness="1">
+                    <Grid ColumnSpacing="16">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+
+                        <StackPanel Grid.Column="0" Spacing="4">
+                            <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                                <FontIcon Glyph="&#xE777;" FontSize="16" Foreground="{ThemeResource ErrorBrush}" VerticalAlignment="Center" />
+                                <TextBlock Text="{x:Bind ViewModel.ResetSettingsLabel, Mode=OneWay}" FontSize="15" FontWeight="SemiBold" Foreground="{ThemeResource ApplicationForegroundBrush}" VerticalAlignment="Center" />
+                            </StackPanel>
+                            <TextBlock Text="{x:Bind ViewModel.ResetSettingsDescLabel, Mode=OneWay}"
+                                       FontSize="12" Foreground="{ThemeResource SubtleForegroundBrush}" TextWrapping="Wrap" />
+                        </StackPanel>
+
+                        <Button Grid.Column="1" x:Name="ResetSettingsButton" Content="{x:Bind ViewModel.ResetSettingsLabel, Mode=OneWay}" Height="40" CornerRadius="8"
+                                Style="{StaticResource SecondaryButtonStyle}" Click="OnResetSettingsClick" VerticalAlignment="Center" />
+                    </Grid>
+                </Border>
+            </StackPanel>
+        </Grid>
+    </ScrollViewer>
+</Page>

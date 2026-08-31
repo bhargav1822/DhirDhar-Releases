@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ContentDialog
+    x:Class="DhirDhar.Desktop.Views.Borrowers.ScanQrDialog"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    DefaultButton="Primary"
+    PrimaryButtonClick="ContentDialog_PrimaryButtonClick"
+    CloseButtonClick="ContentDialog_CloseButtonClick"
+    Opened="ContentDialog_Opened">
+
+    <Grid RowSpacing="16" MinWidth="360" MaxWidth="480">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <!-- Header / Instructions -->
+        <StackPanel Grid.Row="0" Spacing="6">
+            <StackPanel Orientation="Horizontal" Spacing="8">
+                <FontIcon Glyph="&#xED14;" FontSize="22" Foreground="{ThemeResource PrimaryBrush}" VerticalAlignment="Center" />
+                <TextBlock x:Name="InstructionTitleTextBlock" Text="Scan Account QR Code" FontWeight="SemiBold" FontSize="16" VerticalAlignment="Center" />
+            </StackPanel>
+            <TextBlock x:Name="InstructionSubtitleTextBlock" Text="Scan the borrower's account QR code with a USB scanner or enter the code below." FontSize="13" Foreground="{ThemeResource SubtleForegroundBrush}" TextWrapping="Wrap" />
+        </StackPanel>
+
+        <!-- Input Box for Scanner or Manual Entry -->
+        <TextBox Grid.Row="1" x:Name="QrInputTextBox" PlaceholderText="DHIRDHAR|ACCOUNT|..." Height="44" CornerRadius="8" FontSize="14" KeyDown="QrInputTextBox_KeyDown" TextChanged="QrInputTextBox_TextChanged" />
+
+        <!-- Error Message Banner -->
+        <Border Grid.Row="2" x:Name="ErrorBanner" Background="{ThemeResource SurfaceBackgroundBrush}" BorderBrush="{ThemeResource ErrorBrush}" BorderThickness="1" CornerRadius="8" Padding="12,10" Visibility="Collapsed">
+            <StackPanel Orientation="Horizontal" Spacing="8">
+                <FontIcon Glyph="&#xEA39;" Foreground="{ThemeResource ErrorBrush}" FontSize="16" VerticalAlignment="Center" />
+                <TextBlock x:Name="ErrorMessageTextBlock" Text="Invalid DhirDhar QR Code." Foreground="{ThemeResource ErrorBrush}" FontSize="13" VerticalAlignment="Center" TextWrapping="Wrap" />
+            </StackPanel>
+        </Border>
+
+        <!-- Loading / Searching Indicator -->
+        <ProgressRing Grid.Row="3" x:Name="SearchingProgressRing" IsActive="False" Visibility="Collapsed" HorizontalAlignment="Center" />
+    </Grid>
+</ContentDialog>

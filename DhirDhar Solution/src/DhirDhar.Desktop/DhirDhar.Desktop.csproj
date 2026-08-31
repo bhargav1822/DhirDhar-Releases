@@ -1,0 +1,127 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <Platform Condition="'$(Platform)' == ''">x64</Platform>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows10.0.19041.0</TargetFramework>
+    <TargetPlatformVersion>10.0.26100.0</TargetPlatformVersion>
+    <TargetPlatformMinVersion>10.0.17763.0</TargetPlatformMinVersion>
+    <SupportedOSPlatformVersion>10.0.17763.0</SupportedOSPlatformVersion>
+    <RootNamespace>DhirDhar.Desktop</RootNamespace>
+    <AssemblyName>DhirDhar.Desktop</AssemblyName>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <ApplicationIcon>Assets\AppIcon.ico</ApplicationIcon>
+    <Platforms>x64</Platforms>
+    <PlatformTarget>x64</PlatformTarget>
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+    <RuntimeIdentifiers>win-x64</RuntimeIdentifiers>
+    <SelfContained>true</SelfContained>
+    <UseWinUI>true</UseWinUI>
+    <EnableMsixTooling>true</EnableMsixTooling>
+    <WindowsPackageType>None</WindowsPackageType>
+    <WindowsAppSDKSelfContained>true</WindowsAppSDKSelfContained>
+    <WindowsSdkPackageVersion>10.0.26100.38</WindowsSdkPackageVersion>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <XamlLanguage>C#</XamlLanguage>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)' == 'Release'">
+    <DebugType>none</DebugType>
+    <DebugSymbols>false</DebugSymbols>
+  </PropertyGroup>
+
+  <!--
+    Opt-in MSIX packaging for releases. The default build (Debug/Release without this flag)
+    produces the unpackaged .exe used for day-to-day development. To generate the signed-ready
+    .msix installer that the in-app updater installs, run:
+        dotnet build -c Release -p:Platform=x64 -p:PackageDhirDhar=true
+    The package appears under bin\x64\Release\...\DhirDhar.Desktop.msix. Sign it with your
+    Authenticode/AppX publisher certificate before serving it on the HTTPS update feed.
+  -->
+  <PropertyGroup Condition="'$(PackageDhirDhar)' == 'true'">
+    <WindowsPackageType>MSIX</WindowsPackageType>
+    <GenerateAppxPackageOnBuild>true</GenerateAppxPackageOnBuild>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.5.240428000" />
+    <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.22621.756" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="8.0.1" />
+    <PackageReference Include="Microsoft.Extensions.Configuration" Version="8.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="8.0.1" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="8.0.2" />
+    <PackageReference Include="Microsoft.Extensions.Logging" Version="8.0.1" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Configuration" Version="8.0.1" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="8.0.1" />
+    <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="8.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\DhirDhar.Application\DhirDhar.Application.csproj" />
+    <ProjectReference Include="..\DhirDhar.Infrastructure\DhirDhar.Infrastructure.csproj" />
+    <ProjectReference Include="..\DhirDhar.Updater\DhirDhar.Updater.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Assets\AppIcon.ico">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\LoadingScreen.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\DhirDharLogo.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\GoogleDriveLogo.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\Square44Logo.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\Square150Logo.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\Square300Logo.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\NotoSansGujarati.ttf">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\Fonts\NotoSansGujarati.ttf">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\Fonts\NotoSansDevanagari.ttf">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\Fonts\GoogleSans.ttf">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <None Include="appsettings.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="google_client_secrets.json" Condition="Exists('google_client_secrets.json')">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <!-- Exclude orphaned XAML test/draft files that have no code-behind -->
+    <Page Remove="Views\Borrowers\BorrowerEditPageHAlign.xaml" />
+    <Page Remove="Views\Borrowers\BorrowerEditPageMinimal.xaml" />
+    <Page Remove="Views\Borrowers\BorrowerEditPageNoBind.xaml" />
+    <Page Remove="Views\Borrowers\BorrowerEditPageNoCR.xaml" />
+    <Page Remove="Views\Borrowers\BorrowerEditPageNoLang.xaml" />
+    <Page Remove="Views\Borrowers\BorrowerEditPageOnlyH.xaml" />
+    <Page Remove="Views\Borrowers\BorrowerEditPagePH.xaml" />
+    <None Include="Views\Borrowers\BorrowerEditPageHAlign.xaml" />
+    <None Include="Views\Borrowers\BorrowerEditPageMinimal.xaml" />
+    <None Include="Views\Borrowers\BorrowerEditPageNoBind.xaml" />
+    <None Include="Views\Borrowers\BorrowerEditPageNoCR.xaml" />
+    <None Include="Views\Borrowers\BorrowerEditPageNoLang.xaml" />
+    <None Include="Views\Borrowers\BorrowerEditPageOnlyH.xaml" />
+    <None Include="Views\Borrowers\BorrowerEditPagePH.xaml" />
+  </ItemGroup>
+
+</Project>
+

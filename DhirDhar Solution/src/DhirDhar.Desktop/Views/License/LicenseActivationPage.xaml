@@ -1,0 +1,188 @@
+<Page
+    x:Class="DhirDhar.Desktop.Views.License.LicenseActivationPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:helpers="using:DhirDhar.Desktop.Helpers"
+    mc:Ignorable="d"
+    Background="{ThemeResource ApplicationBackgroundBrush}">
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <Grid Padding="20" MinHeight="600">
+            <!-- Background subtle glow decoration -->
+            <Grid HorizontalAlignment="Center" VerticalAlignment="Center" MinWidth="320" MaxWidth="720">
+                <Border
+                    Background="{ThemeResource SurfaceBackgroundBrush}"
+                    BorderBrush="{ThemeResource BorderBrush}"
+                    BorderThickness="1"
+                    CornerRadius="16"
+                    Padding="32,28">
+                    
+                    <StackPanel Spacing="20">
+                    
+                    <!-- Header with Branding -->
+                    <StackPanel Spacing="8" HorizontalAlignment="Center">
+                        <StackPanel Orientation="Horizontal" Spacing="12" HorizontalAlignment="Center">
+                            <Border
+                                Width="44"
+                                Height="44"
+                                CornerRadius="10"
+                                Background="{ThemeResource PrimaryBrush}">
+                                <FontIcon
+                                    Glyph="&#xE8D7;"
+                                    FontSize="22"
+                                    Foreground="White"
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center"/>
+                            </Border>
+                            <TextBlock
+                                Text="DhirDhar"
+                                FontSize="28"
+                                FontWeight="Bold"
+                                Foreground="{ThemeResource ApplicationForegroundBrush}"
+                                VerticalAlignment="Center"/>
+                        </StackPanel>
+                        
+                        <TextBlock
+                            Text="{x:Bind ViewModel.AnnualOfflineLicenseActivationLabel, Mode=OneWay}"
+                            FontSize="18"
+                            FontWeight="SemiBold"
+                            Foreground="{ThemeResource ApplicationForegroundBrush}"
+                            HorizontalAlignment="Center"/>
+                        
+                        <TextBlock
+                            Text="{x:Bind ViewModel.LicenseActivationInstructionsLabel, Mode=OneWay}"
+                            FontSize="13"
+                            Foreground="{ThemeResource SubtleForegroundBrush}"
+                            HorizontalAlignment="Center"
+                            TextAlignment="Center"/>
+                    </StackPanel>
+
+                    <!-- Device Binding Badge -->
+                    <Border
+                        Background="{ThemeResource ApplicationBackgroundBrush}"
+                        BorderBrush="{ThemeResource BorderBrush}"
+                        BorderThickness="1"
+                        CornerRadius="8"
+                        Padding="16,10">
+                        <Grid ColumnDefinitions="Auto,*,Auto">
+                            <StackPanel Orientation="Horizontal" Spacing="8" Grid.Column="0" VerticalAlignment="Center">
+                                <FontIcon Glyph="&#xE7F8;" FontSize="15" Foreground="{ThemeResource SubtleForegroundBrush}"/>
+                                <TextBlock Text="{x:Bind ViewModel.HardwareIdLabel, Mode=OneWay}" FontSize="12" FontWeight="SemiBold" Foreground="{ThemeResource SubtleForegroundBrush}"/>
+                            </StackPanel>
+                            
+                            <TextBlock
+                                Grid.Column="1"
+                                Text="{x:Bind ViewModel.DeviceId, Mode=OneWay}"
+                                FontSize="12"
+                                FontFamily="Consolas, Segoe UI Mono, Courier New"
+                                Foreground="{ThemeResource ApplicationForegroundBrush}"
+                                HorizontalAlignment="Right"
+                                VerticalAlignment="Center"/>
+                        </Grid>
+                    </Border>
+
+                    <!-- Serial Key Input -->
+                    <StackPanel Spacing="8">
+                        <Grid ColumnDefinitions="*,Auto">
+                            <TextBlock
+                                Text="{x:Bind ViewModel.SerialKeyLabel, Mode=OneWay}"
+                                FontSize="13"
+                                FontWeight="SemiBold"
+                                Foreground="{ThemeResource ApplicationForegroundBrush}"/>
+                            
+                            <Button
+                                Grid.Column="1"
+                                Command="{x:Bind ViewModel.PasteCommand}"
+                                Padding="8,4"
+                                Background="Transparent"
+                                BorderThickness="0"
+                                ToolTipService.ToolTip="{x:Bind ViewModel.PasteTooltipLabel, Mode=OneWay}">
+                                <StackPanel Orientation="Horizontal" Spacing="6">
+                                    <FontIcon Glyph="&#xE77F;" FontSize="12" Foreground="{ThemeResource PrimaryBrush}"/>
+                                    <TextBlock Text="{x:Bind ViewModel.PasteFromClipboardLabel, Mode=OneWay}" FontSize="12" Foreground="{ThemeResource PrimaryBrush}"/>
+                                </StackPanel>
+                            </Button>
+                        </Grid>
+
+                        <TextBox
+                            x:Name="SerialKeyTextBox"
+                            helpers:IndicInput.IsDisabled="True"
+                            Text="{x:Bind ViewModel.SerialKeyInput, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                            PlaceholderText="XXXXX-XXXXX-XXXXX-XXXXX-XXXXX"
+                            AcceptsReturn="True"
+                            TextWrapping="Wrap"
+                            MinHeight="90"
+                            MaxHeight="140"
+                            FontFamily="Consolas, Segoe UI Mono, Courier New"
+                            FontSize="13"
+                            CornerRadius="8"
+                            Background="{ThemeResource ApplicationBackgroundBrush}"
+                            BorderBrush="{ThemeResource BorderBrush}"/>
+                    </StackPanel>
+
+                    <!-- Error Alert -->
+                    <InfoBar
+                        IsOpen="{x:Bind ViewModel.HasError, Mode=OneWay}"
+                        Severity="Error"
+                        Title="{x:Bind ViewModel.ActivationFailedLabel, Mode=OneWay}"
+                        Message="{x:Bind ViewModel.ErrorMessage, Mode=OneWay}"
+                        IsClosable="False"/>
+
+                    <!-- Success Alert -->
+                    <InfoBar
+                        IsOpen="{x:Bind ViewModel.IsSuccess, Mode=OneWay}"
+                        Severity="Success"
+                        Title="{x:Bind ViewModel.LicenseActivatedLabel, Mode=OneWay}"
+                        Message="{x:Bind ViewModel.StatusMessage, Mode=OneWay}"
+                        IsClosable="False"/>
+
+                    <!-- Actions -->
+                    <Grid ColumnDefinitions="Auto,*,Auto" Margin="0,8,0,0">
+                        <Button
+                            Grid.Column="0"
+                            Command="{x:Bind ViewModel.ClearCommand}"
+                            Content="{x:Bind ViewModel.ClearLabel, Mode=OneWay}"
+                            Width="90"
+                            Height="38"
+                            CornerRadius="8"
+                            Background="{ThemeResource ApplicationBackgroundBrush}"
+                            BorderBrush="{ThemeResource BorderBrush}"/>
+
+                        <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="12">
+                            <ProgressRing
+                                IsActive="{x:Bind ViewModel.IsActivating, Mode=OneWay}"
+                                Width="24"
+                                Height="24"
+                                VerticalAlignment="Center"/>
+
+                            <Button
+                                x:Name="ActivateButton"
+                                Command="{x:Bind ViewModel.ActivateCommand}"
+                                IsEnabled="{x:Bind ViewModel.CanActivate, Mode=OneWay}"
+                                Content="{x:Bind ViewModel.ActivateLicenseLabel, Mode=OneWay}"
+                                Width="160"
+                                Height="38"
+                                FontWeight="SemiBold"
+                                CornerRadius="8"
+                                Background="{ThemeResource PrimaryBrush}"
+                                Foreground="White"/>
+                        </StackPanel>
+                    </Grid>
+
+                    <!-- Offline Guarantee Notice -->
+                    <StackPanel Orientation="Horizontal" Spacing="8" HorizontalAlignment="Center" Margin="0,12,0,0">
+                        <FontIcon Glyph="&#xE72E;" FontSize="13" Foreground="{ThemeResource SubtleForegroundBrush}"/>
+                        <TextBlock
+                            Text="{x:Bind ViewModel.OfflineNoticeLabel, Mode=OneWay}"
+                            FontSize="11"
+                            Foreground="{ThemeResource SubtleForegroundBrush}"/>
+                    </StackPanel>
+                    
+                </StackPanel>
+            </Border>
+        </Grid>
+        </Grid>
+    </ScrollViewer>
+</Page>

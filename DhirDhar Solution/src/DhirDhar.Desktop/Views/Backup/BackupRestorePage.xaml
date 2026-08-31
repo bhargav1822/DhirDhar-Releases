@@ -1,0 +1,284 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Page
+    x:Class="DhirDhar.Desktop.Views.Backup.BackupRestorePage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:converters="using:DhirDhar.Desktop.Converters"
+    xmlns:models="using:DhirDhar.Application.Backup.Models"
+    Background="{ThemeResource ApplicationBackgroundBrush}">
+
+    <Page.Resources>
+        <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
+        <converters:InverseBoolToVisibilityConverter x:Key="InverseBoolToVisibilityConverter" />
+        <converters:InverseBoolConverter x:Key="InverseBoolConverter" />
+        <converters:ConnectionStatusConverter x:Key="ConnectionStatusConverter" />
+        <converters:TextToLocalizedTextConverter x:Key="TextToLocalizedTextConverter" />
+        <converters:DigitLocalizingConverter x:Key="DigitLocalizingConverter" />
+        <converters:DateTimeFormatConverter x:Key="DateTimeFormatConverter" />
+        <converters:StringToVisibilityConverter x:Key="StringToVisibilityConverter" />
+        <converters:FileSizeConverter x:Key="FileSizeConverter" />
+    </Page.Resources>
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+        <Grid Padding="30,24,30,24" RowSpacing="20">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+
+            <!-- 1. Page Header: Title (32px), Subtitle, Refresh Button (120x44) -->
+            <Grid Grid.Row="0" Margin="0,0,0,24">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <StackPanel Grid.Column="0" Spacing="6" VerticalAlignment="Center">
+                    <TextBlock Text="{x:Bind ViewModel.PageTitle, Mode=OneWay}" FontSize="32" FontWeight="SemiBold" />
+                    <TextBlock Text="{x:Bind ViewModel.PageSubtitle, Mode=OneWay}" FontSize="16" Foreground="{ThemeResource SubtleForegroundBrush}" TextWrapping="Wrap" />
+                </StackPanel>
+                <Button Grid.Column="1" Width="120" Height="44" CornerRadius="8" Style="{StaticResource SecondaryButtonStyle}" Command="{x:Bind ViewModel.RefreshCommand, Mode=OneWay}" VerticalAlignment="Center">
+                    <StackPanel Orientation="Horizontal" Spacing="8" HorizontalAlignment="Center" VerticalAlignment="Center">
+                        <FontIcon Glyph="&#xE72C;" FontSize="16" VerticalAlignment="Center" />
+                        <TextBlock Text="{x:Bind ViewModel.RefreshText, Mode=OneWay}" VerticalAlignment="Center" />
+                    </StackPanel>
+                </Button>
+            </Grid>
+
+            <!-- Error Banner -->
+            <Grid Grid.Row="1" Visibility="{x:Bind ViewModel.HasError, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}">
+                <Border Background="{ThemeResource SurfaceBackgroundBrush}" BorderBrush="{ThemeResource BorderBrush}" BorderThickness="1" CornerRadius="12" Padding="20" HorizontalAlignment="Center">
+                    <StackPanel Spacing="12" HorizontalAlignment="Center">
+                        <TextBlock Text="{x:Bind ViewModel.ErrorMessage, Mode=OneWay}" Style="{StaticResource BodyTextStyle}" Foreground="{ThemeResource ErrorBrush}" />
+                        <Button Content="{x:Bind ViewModel.RetryLabel, Mode=OneWay}" Style="{StaticResource PrimaryButtonStyle}" Command="{x:Bind ViewModel.RefreshCommand, Mode=OneWay}" HorizontalAlignment="Center" />
+                    </StackPanel>
+                </Border>
+            </Grid>
+
+            <!-- 2. Top Action Cards: Local Backup & Google Drive (Equal width, 18px gap) -->
+            <Grid Grid.Row="2" ColumnSpacing="18">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="1*" />
+                    <ColumnDefinition Width="1*" />
+                </Grid.ColumnDefinitions>
+
+                <!-- Card 1: Local Backup -->
+                <Border Grid.Column="0" Background="{ThemeResource SurfaceBackgroundBrush}" BorderBrush="{ThemeResource BorderBrush}" BorderThickness="1" CornerRadius="12" Padding="24">
+                    <StackPanel Spacing="16">
+                        <TextBlock Text="{x:Bind ViewModel.LocalBackupLabel, Mode=OneWay}" FontSize="16" FontWeight="SemiBold" Foreground="{ThemeResource ApplicationForegroundBrush}" />
+
+                        <StackPanel Orientation="Horizontal" Spacing="12" VerticalAlignment="Center">
+                            <Button Content="{x:Bind ViewModel.BackupNowLabel, Mode=OneWay}" Style="{StaticResource PrimaryButtonStyle}" Height="40" CornerRadius="8" Command="{x:Bind ViewModel.BackupNowCommand, Mode=OneWay}" VerticalAlignment="Center" />
+                            <Button Content="{x:Bind ViewModel.RestoreLabel, Mode=OneWay}" Style="{StaticResource SecondaryButtonStyle}" Height="40" CornerRadius="8" Command="{x:Bind ViewModel.RestoreCommand, Mode=OneWay}" VerticalAlignment="Center" />
+                        </StackPanel>
+
+                        <TextBlock Text="{x:Bind ViewModel.StatusMessage, Mode=OneWay}" FontSize="12" Foreground="{ThemeResource SubtleForegroundBrush}" TextWrapping="Wrap" Visibility="{x:Bind ViewModel.StatusMessage, Mode=OneWay, Converter={StaticResource StringToVisibilityConverter}}" />
+                    </StackPanel>
+                </Border>
+
+                <!-- Card 2: Google Drive (Official Logo & Complete Real States) -->
+                <Border Grid.Column="1" Background="{ThemeResource SurfaceBackgroundBrush}" BorderBrush="{ThemeResource BorderBrush}" BorderThickness="1" CornerRadius="12" Padding="24">
+                    <StackPanel Spacing="16">
+                        <!-- Header with Official Google Drive Logo -->
+                        <StackPanel Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
+                            <Image Source="ms-appx:///Assets/GoogleDriveLogo.png" Width="24" Height="24" VerticalAlignment="Center" />
+                            <TextBlock Text="{x:Bind ViewModel.GoogleDriveLabel, Mode=OneWay}" FontSize="16" FontWeight="SemiBold" Foreground="{ThemeResource ApplicationForegroundBrush}" VerticalAlignment="Center" />
+                        </StackPanel>
+
+                        <!-- Connecting Loading State -->
+                        <StackPanel Orientation="Horizontal" Spacing="10" Visibility="{x:Bind ViewModel.IsGoogleDriveConnecting, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}" VerticalAlignment="Center">
+                            <ProgressRing IsActive="True" Width="20" Height="20" VerticalAlignment="Center" />
+                            <TextBlock Text="{x:Bind ViewModel.ConnectingToGoogleDriveLabel, Mode=OneWay}" FontSize="13" Foreground="{ThemeResource SubtleForegroundBrush}" VerticalAlignment="Center" />
+                        </StackPanel>
+
+                        <!-- Connected Details State -->
+                        <StackPanel Spacing="6" Visibility="{x:Bind ViewModel.GoogleDriveConnected, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}">
+                            <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+                                <TextBlock Text="{x:Bind ViewModel.StatusPrefixLabel, Mode=OneWay}" FontSize="13" Foreground="{ThemeResource SubtleForegroundBrush}" VerticalAlignment="Center" />
+                                <TextBlock Text="{x:Bind ViewModel.ConnectedStatusLabel, Mode=OneWay}" FontSize="13" FontWeight="SemiBold" Foreground="{ThemeResource SuccessBrush}" VerticalAlignment="Center" />
+                            </StackPanel>
+
+                            <TextBlock Text="{x:Bind ViewModel.GoogleDriveEmail, Mode=OneWay}" FontSize="13" FontWeight="SemiBold" Foreground="{ThemeResource PrimaryBrush}" Visibility="{x:Bind ViewModel.GoogleDriveEmail, Mode=OneWay, Converter={StaticResource StringToVisibilityConverter}}" />
+
+                            <StackPanel Orientation="Horizontal" Spacing="16" Margin="0,4,0,0" Visibility="{x:Bind ViewModel.GoogleDriveLastBackupTime, Mode=OneWay, Converter={StaticResource StringToVisibilityConverter}}">
+                                <StackPanel Spacing="2">
+                                    <TextBlock Text="{x:Bind ViewModel.LastBackupLabel, Mode=OneWay}" FontSize="11" Foreground="{ThemeResource SubtleForegroundBrush}" />
+                                    <TextBlock Text="{x:Bind ViewModel.GoogleDriveLastBackupTime, Mode=OneWay}" FontSize="12" Foreground="{ThemeResource ApplicationForegroundBrush}" />
+                                </StackPanel>
+                                <StackPanel Spacing="2">
+                                    <TextBlock Text="{x:Bind ViewModel.StatusLabel, Mode=OneWay}" FontSize="11" Foreground="{ThemeResource SubtleForegroundBrush}" />
+                                    <TextBlock Text="{x:Bind ViewModel.GoogleDriveLastBackupStatus, Mode=OneWay}" FontSize="12" Foreground="{ThemeResource SuccessBrush}" />
+                                </StackPanel>
+                            </StackPanel>
+                        </StackPanel>
+
+                        <!-- Disconnected Status State -->
+                        <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center" Visibility="{x:Bind ViewModel.GoogleDriveConnected, Mode=OneWay, Converter={StaticResource InverseBoolToVisibilityConverter}}">
+                            <TextBlock Text="{x:Bind ViewModel.StatusPrefixLabel, Mode=OneWay}" FontSize="13" Foreground="{ThemeResource SubtleForegroundBrush}" VerticalAlignment="Center" />
+                            <TextBlock Text="{x:Bind ViewModel.NotConnectedStatusLabel, Mode=OneWay}" FontSize="13" FontWeight="SemiBold" Foreground="{ThemeResource SubtleForegroundBrush}" VerticalAlignment="Center" />
+                        </StackPanel>
+
+                        <!-- Uploading Progress Bar -->
+                        <StackPanel Spacing="6" Visibility="{x:Bind ViewModel.IsGoogleDriveUploading, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}">
+                            <TextBlock Text="{x:Bind ViewModel.UploadingBackupPackageLabel, Mode=OneWay}" FontSize="12" Foreground="{ThemeResource SubtleForegroundBrush}" />
+                            <ProgressBar Value="{x:Bind ViewModel.GoogleDriveUploadProgressPercent, Mode=OneWay}" Maximum="100" Height="6" CornerRadius="3" />
+                            <TextBlock Text="{x:Bind ViewModel.FormattedUploadProgress, Mode=OneWay}" FontSize="12" Foreground="{ThemeResource SubtleForegroundBrush}" HorizontalAlignment="Right" />
+                        </StackPanel>
+
+                        <!-- Error Message Container -->
+                        <TextBlock Text="{x:Bind ViewModel.GoogleDriveErrorMessage, Mode=OneWay}" FontSize="12" Foreground="{ThemeResource ErrorBrush}" TextWrapping="Wrap" Visibility="{x:Bind ViewModel.GoogleDriveErrorMessage, Mode=OneWay, Converter={StaticResource StringToVisibilityConverter}}" />
+
+                        <!-- Action Buttons Row -->
+                        <StackPanel Orientation="Horizontal" Spacing="12">
+                            <!-- Connect Button -->
+                            <Button Content="{x:Bind ViewModel.ConnectLabel, Mode=OneWay}" Style="{StaticResource SecondaryButtonStyle}" Height="40" CornerRadius="8" Command="{x:Bind ViewModel.ConnectGoogleDriveCommand, Mode=OneWay}"
+                                    Visibility="{x:Bind ViewModel.GoogleDriveConnected, Mode=OneWay, Converter={StaticResource InverseBoolToVisibilityConverter}}"
+                                    IsEnabled="{x:Bind ViewModel.IsGoogleDriveConnecting, Mode=OneWay, Converter={StaticResource InverseBoolConverter}}" />
+
+                            <!-- Backup to Google Drive -->
+                            <Button Content="{x:Bind ViewModel.BackupToGoogleDriveLabel, Mode=OneWay}" Style="{StaticResource PrimaryButtonStyle}" Height="40" CornerRadius="8" Command="{x:Bind ViewModel.BackupToCloudCommand, Mode=OneWay}"
+                                    Visibility="{x:Bind ViewModel.GoogleDriveConnected, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}" />
+
+                            <!-- Restore from Google Drive -->
+                            <Button Content="{x:Bind ViewModel.RestoreFromGoogleDriveLabel, Mode=OneWay}" Style="{StaticResource SecondaryButtonStyle}" Height="40" CornerRadius="8" Command="{x:Bind ViewModel.RestoreFromCloudCommand, Mode=OneWay}"
+                                    Visibility="{x:Bind ViewModel.GoogleDriveConnected, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}" />
+
+                            <!-- Disconnect Button -->
+                            <Button Content="{x:Bind ViewModel.DisconnectLabel, Mode=OneWay}" Style="{StaticResource SecondaryButtonStyle}" Height="40" CornerRadius="8" Command="{x:Bind ViewModel.DisconnectGoogleDriveCommand, Mode=OneWay}"
+                                    Visibility="{x:Bind ViewModel.GoogleDriveConnected, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}" />
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+            </Grid>
+
+            <!-- 3. Automatic Backup Card (Full-width card, controls & status display) -->
+            <Border Grid.Row="3" Background="{ThemeResource SurfaceBackgroundBrush}" BorderBrush="{ThemeResource BorderBrush}" BorderThickness="1" CornerRadius="12" Padding="24">
+                <StackPanel Spacing="16">
+                    <Grid ColumnSpacing="20" RowSpacing="16">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" MinWidth="220" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+
+                        <!-- Toggle & Title (Left side) -->
+                        <StackPanel Grid.Column="0" Spacing="8" VerticalAlignment="Center">
+                            <TextBlock Text="{x:Bind ViewModel.AutomaticBackupLabel, Mode=OneWay}" FontSize="16" FontWeight="SemiBold" Foreground="{ThemeResource ApplicationForegroundBrush}" />
+                            <ToggleSwitch IsOn="True" IsEnabled="False" OnContent="{x:Bind ViewModel.AlwaysOnLabel, Mode=OneWay}" OffContent="{x:Bind ViewModel.AlwaysOnLabel, Mode=OneWay}" VerticalAlignment="Center" Margin="0,-4,0,0" ToolTipService.ToolTip="Automatic backup is permanently active to protect your data." />
+                        </StackPanel>
+
+                        <!-- Controls (Right side: Frequency, Retention) -->
+                        <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="16" HorizontalAlignment="Right" VerticalAlignment="Center">
+                            <!-- Frequency ComboBox -->
+                            <StackPanel Spacing="6" VerticalAlignment="Center">
+                                <TextBlock Text="{x:Bind ViewModel.FrequencyLabel, Mode=OneWay}" FontSize="12" Foreground="{ThemeResource SubtleForegroundBrush}" FontWeight="SemiBold" />
+                                <ComboBox ItemsSource="{x:Bind ViewModel.BackupFrequencyOptions, Mode=OneWay}"
+                                          SelectedValue="{x:Bind ViewModel.BackupFrequency, Mode=TwoWay}"
+                                          SelectedValuePath="Value" DisplayMemberPath="Label"
+                                          Width="140" Height="40" CornerRadius="8" VerticalAlignment="Center" />
+                            </StackPanel>
+
+                            <!-- Retention NumberBox -->
+                            <StackPanel Spacing="6" VerticalAlignment="Center">
+                                <TextBlock Text="{x:Bind ViewModel.RetentionLabel, Mode=OneWay}" FontSize="12" Foreground="{ThemeResource SubtleForegroundBrush}" FontWeight="SemiBold" />
+                                <NumberBox Value="{x:Bind ViewModel.RetentionCount, Mode=TwoWay}" Minimum="1" Maximum="100" Width="100" Height="40" CornerRadius="8" VerticalAlignment="Center" />
+                            </StackPanel>
+                        </StackPanel>
+                    </Grid>
+
+                    <!-- Status Display: Last Successful Automatic Backup & Next Scheduled Backup -->
+                    <StackPanel Orientation="Horizontal" Spacing="32" Margin="0,4,0,0">
+                        <StackPanel Spacing="2">
+                            <TextBlock Text="{x:Bind ViewModel.LastAutomaticBackupLabel, Mode=OneWay}" FontSize="11" Foreground="{ThemeResource SubtleForegroundBrush}" />
+                            <TextBlock Text="{x:Bind ViewModel.LastAutomaticBackupText, Mode=OneWay}" FontSize="13" FontWeight="SemiBold" Foreground="{ThemeResource ApplicationForegroundBrush}" />
+                        </StackPanel>
+                        <StackPanel Spacing="2">
+                            <TextBlock Text="{x:Bind ViewModel.NextScheduledBackupLabel, Mode=OneWay}" FontSize="11" Foreground="{ThemeResource SubtleForegroundBrush}" />
+                            <TextBlock Text="{x:Bind ViewModel.NextScheduledBackupText, Mode=OneWay}" FontSize="13" FontWeight="SemiBold" Foreground="{ThemeResource PrimaryBrush}" />
+                        </StackPanel>
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+
+            <!-- 4. Backup History Card (Full-width table with empty state) -->
+            <Border Grid.Row="4" Background="{ThemeResource SurfaceBackgroundBrush}" BorderBrush="{ThemeResource BorderBrush}" BorderThickness="1" CornerRadius="12" Padding="24" MinHeight="240">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+
+                    <TextBlock Grid.Row="0" Text="{x:Bind ViewModel.BackupHistoryLabel, Mode=OneWay}" FontSize="18" FontWeight="SemiBold" Foreground="{ThemeResource ApplicationForegroundBrush}" Margin="0,0,0,18" />
+
+                    <!-- Backup History Table Container -->
+                    <ScrollViewer Grid.Row="1" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled"
+                                  Visibility="{x:Bind ViewModel.HasHistory, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}">
+                        <StackPanel MinWidth="750">
+                            <!-- Table Header Row -->
+                            <Grid ColumnSpacing="8" Padding="0,0,0,12">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="16*" MinWidth="110" />
+                                    <ColumnDefinition Width="10*" MinWidth="75" />
+                                    <ColumnDefinition Width="42*" MinWidth="220" />
+                                    <ColumnDefinition Width="10*" MinWidth="70" />
+                                    <ColumnDefinition Width="12*" MinWidth="80" />
+                                    <ColumnDefinition Width="10*" MinWidth="80" />
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Grid.Column="0" Text="{x:Bind ViewModel.DateColumnLabel, Mode=OneWay}" FontSize="12" Foreground="{ThemeResource SubtleForegroundBrush}" FontWeight="SemiBold" HorizontalAlignment="Left" />
+                                <TextBlock Grid.Column="1" Text="{x:Bind ViewModel.TypeColumnLabel, Mode=OneWay}" FontSize="12" Foreground="{ThemeResource SubtleForegroundBrush}" FontWeight="SemiBold" HorizontalAlignment="Left" />
+                                <TextBlock Grid.Column="2" Text="{x:Bind ViewModel.LocationColumnLabel, Mode=OneWay}" FontSize="12" Foreground="{ThemeResource SubtleForegroundBrush}" FontWeight="SemiBold" HorizontalAlignment="Left" />
+                                <TextBlock Grid.Column="3" Text="{x:Bind ViewModel.SizeColumnLabel, Mode=OneWay}" FontSize="12" Foreground="{ThemeResource SubtleForegroundBrush}" FontWeight="SemiBold" HorizontalAlignment="Right" />
+                                <TextBlock Grid.Column="4" Text="{x:Bind ViewModel.StatusColumnLabel, Mode=OneWay}" FontSize="12" Foreground="{ThemeResource SubtleForegroundBrush}" FontWeight="SemiBold" HorizontalAlignment="Center" />
+                                <TextBlock Grid.Column="5" Text="{x:Bind ViewModel.ActionsColumnLabel, Mode=OneWay}" FontSize="12" Foreground="{ThemeResource SubtleForegroundBrush}" FontWeight="SemiBold" HorizontalAlignment="Center" />
+                            </Grid>
+
+                            <!-- Table Data Rows ListView -->
+                            <ListView ItemsSource="{x:Bind ViewModel.BackupHistory, Mode=OneWay}" SelectionMode="None"
+                                      ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+                                <ListView.ItemContainerStyle>
+                                    <Style TargetType="ListViewItem">
+                                        <Setter Property="Padding" Value="0" />
+                                        <Setter Property="Margin" Value="0" />
+                                        <Setter Property="MinHeight" Value="40" />
+                                        <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                                        <Setter Property="VerticalContentAlignment" Value="Center" />
+                                    </Style>
+                                </ListView.ItemContainerStyle>
+
+                                <ListView.ItemTemplate>
+                                    <DataTemplate x:DataType="models:BackupHistoryEntry">
+                                        <Grid ColumnSpacing="8" MinHeight="40" VerticalAlignment="Center">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="16*" MinWidth="110" />
+                                                <ColumnDefinition Width="10*" MinWidth="75" />
+                                                <ColumnDefinition Width="42*" MinWidth="220" />
+                                                <ColumnDefinition Width="10*" MinWidth="70" />
+                                                <ColumnDefinition Width="12*" MinWidth="80" />
+                                                <ColumnDefinition Width="10*" MinWidth="80" />
+                                            </Grid.ColumnDefinitions>
+                                            <TextBlock Grid.Column="0" Text="{x:Bind BackupDate, Mode=OneTime, Converter={StaticResource DateTimeFormatConverter}, ConverterParameter=short}" FontSize="12" VerticalAlignment="Center" HorizontalAlignment="Left" />
+                                            <TextBlock Grid.Column="1" Text="{x:Bind Type, Converter={StaticResource TextToLocalizedTextConverter}}" FontSize="12" VerticalAlignment="Center" HorizontalAlignment="Left" />
+                                            <TextBlock Grid.Column="2" Text="{x:Bind Location}" FontSize="12" TextTrimming="CharacterEllipsis" TextWrapping="NoWrap" VerticalAlignment="Center" HorizontalAlignment="Left" ToolTipService.ToolTip="{x:Bind Location}" />
+                                            <TextBlock Grid.Column="3" Text="{x:Bind Size, Mode=OneTime, Converter={StaticResource FileSizeConverter}}" FontSize="12" VerticalAlignment="Center" HorizontalAlignment="Right" />
+                                            <TextBlock Grid.Column="4" Text="{x:Bind Status, Converter={StaticResource TextToLocalizedTextConverter}}" FontSize="12" Foreground="{ThemeResource SuccessBrush}" VerticalAlignment="Center" HorizontalAlignment="Center" />
+                                            <Button Grid.Column="5" Content="Restore" Style="{StaticResource SecondaryButtonStyle}" Height="28" FontSize="11" CornerRadius="4" HorizontalAlignment="Center" VerticalAlignment="Center" Click="OnRestoreItemClick" />
+                                        </Grid>
+                                    </DataTemplate>
+                                </ListView.ItemTemplate>
+                            </ListView>
+                        </StackPanel>
+                    </ScrollViewer>
+
+                    <!-- Standardized Empty State Container -->
+                    <StackPanel Grid.Row="1" Spacing="12" HorizontalAlignment="Center" VerticalAlignment="Center" Padding="40"
+                                Visibility="{x:Bind ViewModel.HasHistory, Mode=OneWay, Converter={StaticResource InverseBoolToVisibilityConverter}}">
+                        <FontIcon Glyph="&#xE777;" FontSize="40" Foreground="{ThemeResource SubtleForegroundBrush}" HorizontalAlignment="Center" />
+                        <TextBlock Text="{x:Bind ViewModel.NoBackupsTitle, Mode=OneWay}" FontSize="16" FontWeight="SemiBold" Foreground="{ThemeResource ApplicationForegroundBrush}" HorizontalAlignment="Center" />
+                        <TextBlock Text="{x:Bind ViewModel.NoBackupsSubtitle, Mode=OneWay}" FontSize="13" Foreground="{ThemeResource SubtleForegroundBrush}" HorizontalAlignment="Center" />
+                    </StackPanel>
+                </Grid>
+            </Border>
+        </Grid>
+    </ScrollViewer>
+</Page>
