@@ -10,4 +10,7 @@ public interface IPrintService
     Task<bool> PrintReceiptAsync(ReceiptData receipt, string? printerName = null, CancellationToken cancellationToken = default);
     IReadOnlyList<string> GetInstalledPrinters();
     string? GetDefaultPrinterName();
+    IReadOnlyList<PrinterPaperSizeInfo> GetSupportedPaperSizes(string? printerName = null);
+    bool IsThermalPrinter(string? printerName);
+    Task<bool> PrintTestReceiptAsync(string? printerName, string? paperSizeName, bool autoCut, string? languageCode = null, CancellationToken cancellationToken = default);
 }

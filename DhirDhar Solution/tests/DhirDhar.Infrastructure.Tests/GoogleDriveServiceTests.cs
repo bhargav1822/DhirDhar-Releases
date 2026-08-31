@@ -179,5 +179,15 @@ public sealed class GoogleDriveServiceTests
             await _service.RestoreFromCloudAsync("test-id");
         });
     }
+
+    [Fact]
+    public void GoogleDriveService_MissingSizeMetadata_ProducesUnknownInsteadOfZeroBytes()
+    {
+        long? missingSize = null;
+        var formatted = FileSizeFormatter.Format(missingSize);
+        Assert.Equal("Unknown", formatted);
+        Assert.NotEqual("0 B", formatted);
+    }
 }
+
 

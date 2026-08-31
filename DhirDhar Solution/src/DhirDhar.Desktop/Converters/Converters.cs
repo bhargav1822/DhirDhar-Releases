@@ -3,11 +3,33 @@ using System.Globalization;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Data;
 using Microsoft.UI.Xaml.Media;
+using DhirDhar.Application.Backup;
 using DhirDhar.Application.Localization;
 using DhirDhar.Desktop;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace DhirDhar.Desktop.Converters;
+
+public sealed class FileSizeConverter : IValueConverter
+{
+    public object? Convert(object value, Type targetType, object parameter, string language)
+    {
+        long? bytes = null;
+        if (value is long l) bytes = l;
+        else if (value is int i) bytes = i;
+        else if (value is double d) bytes = (long)d;
+        else if (value is string s && long.TryParse(s, out var parsed)) bytes = parsed;
+        else if (value is null) bytes = null;
+
+        var sp = App.ServiceProvider;
+        var loc = sp?.GetService<ILocalizationService>();
+
+        return FileSizeFormatter.Format(bytes, loc);
+    }
+
+    public object ConvertBack(object value, Type targetType, object parameter, string language)
+        => value ?? DependencyProperty.UnsetValue;
+}
 
 public sealed class StateToBrushConverter : IValueConverter
 {

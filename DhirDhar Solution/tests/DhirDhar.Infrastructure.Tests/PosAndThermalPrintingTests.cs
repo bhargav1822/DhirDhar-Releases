@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -308,7 +308,75 @@ public class PosAndThermalPrintingTests : IDisposable
         var printers = printerService.GetInstalledPrinters();
 
         Assert.NotNull(printers);
-        Assert.NotEmpty(printers);
+        // Returns actual installed printers on Windows system
+        if (OperatingSystem.IsWindows())
+        {
+            Assert.NotEmpty(printers);
+        }
+    }
+
+    [Fact]
+    public void WindowsPrinterService_GetSupportedPaperSizes_ReturnsStandardAndContinuousSizes()
+    {
+        var printerService = new WindowsPrinterService(_pathService, NullLogger<WindowsPrinterService>.Instance);
+        var sizes = printerService.GetSupportedPaperSizes();
+
+        Assert.NotNull(sizes);
+        Assert.NotEmpty(sizes);
+        Assert.All(sizes, s =>
+        {
+            Assert.False(string.IsNullOrWhiteSpace(s.Name));
+            Assert.False(string.IsNullOrWhiteSpace(s.DisplayLabel));
+            Assert.True(s.WidthMm >= 0);
+            Assert.True(s.HeightMm >= 0);
+        });
+    }
+
+    [Theory]
+    [InlineData("POS-80 Thermal Printer", true)]
+    [InlineData("EPSON TM-T20III Receipt", true)]
+    [InlineData("Star TSP100 Cutter", true)]
+    [InlineData("XP-58 USB Receipt Printer", true)]
+    [InlineData("Rongta 80mm POS", true)]
+    [InlineData("Microsoft Print to PDF", false)]
+    [InlineData("HP LaserJet Pro MFP M428fdw", false)]
+    [InlineData("Canon PIXMA G3000", false)]
+    public void WindowsPrinterService_IsThermalPrinter_DetectsThermalVsDesktopPrinters(string printerName, bool expectedThermal)
+    {
+        var printerService = new WindowsPrinterService(_pathService, NullLogger<WindowsPrinterService>.Instance);
+        var isThermal = printerService.IsThermalPrinter(printerName);
+
+        Assert.Equal(expectedThermal, isThermal);
+    }
+
+    [Fact]
+    public async Task WindowsPrinterService_PrintTestReceiptAsync_ThrowsOnInvalidOrMissingPrinter()
+    {
+        var locService = new LocalizationService();
+        var printerService = new WindowsPrinterService(_pathService, NullLogger<WindowsPrinterService>.Instance, locService);
+
+        // Missing printer
+        await Assert.ThrowsAsync<InvalidOperationException>(() =>
+            printerService.PrintTestReceiptAsync(null, "A4", false, "gu-IN"));
+
+        await Assert.ThrowsAsync<InvalidOperationException>(() =>
+            printerService.PrintTestReceiptAsync("   ", "A4", false, "gu-IN"));
+
+        // Non-existent printer
+        await Assert.ThrowsAsync<InvalidOperationException>(() =>
+            printerService.PrintTestReceiptAsync("CompletelyFakeNonExistentPrinter_12345", "A4", false, "gu-IN"));
+    }
+
+    [Theory]
+    [InlineData("en-US", "No printer available", "PRINT TEST RECEIPT", "Printing OK")]
+    [InlineData("gu-IN", "કોઈ પ્રિન્ટર ઉપલબ્ધ નથી", "ટેસ્ટ રસીદ પ્રિન્ટ", "પ્રિન્ટિંગ સફળ")]
+    [InlineData("hi-IN", "कोई प्रिंटर उपलब्ध नहीं है", "टेस्ट रसीद प्रिंट", "प्रिंटिंग ठीक")]
+    public void LocalizationService_HasRequiredPrintingKeys(string lang, string expectedNoPrinter, string expectedTitle, string expectedStatus)
+    {
+        var loc = new LocalizationService();
+        Assert.Equal(expectedNoPrinter, loc.GetString("NoPrinterAvailable", lang));
+        Assert.Equal(expectedTitle, loc.GetString("PrintTestReceiptTitle", lang));
+        Assert.Equal(expectedStatus, loc.GetString("StatusPrintingOk", lang));
     }
 
     private sealed class TestDatabasePathService : IDatabasePathService

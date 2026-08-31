@@ -16,6 +16,7 @@
         <converters:BoolToTabBorderBrushConverter x:Key="BoolToTabBorderBrushConverter" />
         <converters:DashToSubtleBrushConverter x:Key="DashToSubtleBrushConverter" />
         <converters:StatusToBrushConverter x:Key="StatusToBrushConverter" />
+        <converters:TextToLocalizedTextConverter x:Key="TextToLocalizedTextConverter" />
 
         <Style x:Key="HeaderActionButtonStyle" TargetType="Button">
             <Setter Property="Background" Value="{ThemeResource SurfaceBackgroundBrush}" />

@@ -5,6 +5,6 @@ public sealed record BackupHistoryEntry(
     DateTime BackupDate,
     string Type,
     string Location,
-    long Size,
+    long? Size,
     string Status,
     string VerificationStatus);

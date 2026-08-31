@@ -2,7 +2,7 @@ namespace DhirDhar.Application.Localization;
 
 public interface ILocalizationService
 {
-    string GetString(string key);
+    string GetString(string key, string? languageCode = null);
     string LocalizeText(string? text);
     string LocalizeText(string? text, string languageCode);
     string FormatInterestDescription(DateTime startDate, DateTime endDate, string? languageCode = null);

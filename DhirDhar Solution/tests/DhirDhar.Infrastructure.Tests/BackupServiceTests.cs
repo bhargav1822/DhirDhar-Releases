@@ -1030,6 +1030,25 @@ public sealed class BackupServiceTests : IDisposable
         try { Directory.Delete(secondaryDir, true); } catch { }
     }
 
+    [Fact]
+    public async Task BackupHistory_DisplaysActualFileSize_AndFormatsAccurately()
+    {
+        var meta = await _backupService.CreateBackupAsync();
+        var history = await _backupService.GetBackupHistoryAsync();
+
+        Assert.Single(history);
+        var entry = history[0];
+        Assert.NotNull(entry.Size);
+        Assert.True(entry.Size > 0);
+
+        var actualFileLength = new FileInfo(meta.Location).Length;
+        Assert.Equal(actualFileLength, entry.Size.Value);
+
+        var formatted = FileSizeFormatter.Format(entry.Size);
+        Assert.False(string.IsNullOrWhiteSpace(formatted));
+        Assert.Contains(formatted[^2..], new[] { " B", "KB", "MB", "GB", "TB" });
+    }
+
     public void Dispose()
     {
         Microsoft.Data.Sqlite.SqliteConnection.ClearAllPools();

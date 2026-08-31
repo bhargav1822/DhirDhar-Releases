@@ -38,6 +38,9 @@ public sealed class SettingsViewModel : ViewModelBase, IDisposable
     private readonly DhirDhar.Application.Validation.IIntegrityService? _integrityService;
 
     private IReadOnlyList<PrinterOption> _printerOptions;
+    private IReadOnlyList<PaperSizeOption> _paperSizeOptions = new List<PaperSizeOption>();
+    private bool _isAutoCutSupported = false;
+    private bool _isPrintingTestReceipt = false;
     private CancellationTokenSource? _loadCts;
     private CancellationTokenSource? _scanCts;
 
@@ -114,10 +117,8 @@ public sealed class SettingsViewModel : ViewModelBase, IDisposable
         _printService = printService ?? (sp?.GetService(typeof(DhirDhar.Application.Printing.IPrintService)) as DhirDhar.Application.Printing.IPrintService);
         _integrityService = integrityService ?? (sp?.GetService(typeof(DhirDhar.Application.Validation.IIntegrityService)) as DhirDhar.Application.Validation.IIntegrityService);
 
-        _printerOptions = new List<PrinterOption>
-        {
-            new(null, _localizationService.GetString("DefaultPrinter"))
-        };
+        _printerOptions = new List<PrinterOption>();
+        _paperSizeOptions = new List<PaperSizeOption>();
 
         if (_licenseManager != null)
         {
@@ -416,18 +417,15 @@ public sealed class SettingsViewModel : ViewModelBase, IDisposable
     public string AutoCutPaperLabel => _localizationService.GetString("AutoCutPaper");
     public string PrintTestReceiptLabel => _localizationService.GetString("PrintTestReceipt");
 
-    public IReadOnlyList<PaperSizeOption> PaperSizeOptions => new List<PaperSizeOption>
-    {
-        new("A4", _localizationService.GetString("PaperSizeA4")),
-        new("A5", _localizationService.GetString("PaperSizeA5")),
-        new("Letter", _localizationService.GetString("PaperSizeLetter")),
-        new("POS58", _localizationService.GetString("PaperSizePOS58")),
-        new("POS80", _localizationService.GetString("PaperSizePOS80")),
-        new("POS110", _localizationService.GetString("PaperSizePOS110")),
-        new("POSCustom", _localizationService.GetString("PaperSizePOSCustom"))
-    };
+    public IReadOnlyList<PaperSizeOption> PaperSizeOptions => _paperSizeOptions;
 
     public IReadOnlyList<PrinterOption> PrinterOptions => _printerOptions;
+
+    public bool IsAutoCutSupported => _isAutoCutSupported;
+
+    public bool CanPrintTestReceipt => !string.IsNullOrWhiteSpace(_selectedPrinter) &&
+                                       !string.Equals(_selectedPrinter, "NONE", StringComparison.OrdinalIgnoreCase) &&
+                                       !_isPrintingTestReceipt;
 
     public string SelectedPaperSize
     {
@@ -464,8 +462,62 @@ public sealed class SettingsViewModel : ViewModelBase, IDisposable
         {
             if (SetProperty(ref _selectedPrinter, value))
             {
+                _ = OnSelectedPrinterChangedAsync(value);
                 _ = SaveCurrentSettingsAsync();
+                OnPropertyChanged(nameof(CanPrintTestReceipt));
             }
+        }
+    }
+
+    private async Task OnSelectedPrinterChangedAsync(string? printerName)
+    {
+        if (string.IsNullOrWhiteSpace(printerName) || string.Equals(printerName, "NONE", StringComparison.OrdinalIgnoreCase))
+        {
+            RunOnUiThread(() =>
+            {
+                _isAutoCutSupported = false;
+                _paperSizeOptions = new List<PaperSizeOption>();
+                OnPropertyChanged(nameof(PaperSizeOptions));
+                OnPropertyChanged(nameof(IsAutoCutSupported));
+                OnPropertyChanged(nameof(CanPrintTestReceipt));
+                OnPropertyChanged(nameof(IsCustomPaperWidthVisible));
+            });
+            return;
+        }
+
+        try
+        {
+            var (autoCut, pSizes) = await Task.Run(() =>
+            {
+                bool autoCut = _printService?.IsThermalPrinter(printerName) ?? false;
+                var raw = _printService?.GetSupportedPaperSizes(printerName) ?? Array.Empty<DhirDhar.Application.Printing.PrinterPaperSizeInfo>();
+                var list = raw.Select(ps => new PaperSizeOption(ps.Name, ps.DisplayLabel)).ToList();
+                return (autoCut, list);
+            }).ConfigureAwait(false);
+
+            RunOnUiThread(() =>
+            {
+                _isAutoCutSupported = autoCut;
+                _paperSizeOptions = pSizes;
+
+                if (!string.IsNullOrWhiteSpace(_selectedPaperSize) && !pSizes.Any(p => string.Equals(p.Value, _selectedPaperSize, StringComparison.OrdinalIgnoreCase)))
+                {
+                    if (pSizes.Count > 0)
+                    {
+                        _selectedPaperSize = pSizes[0].Value;
+                        OnPropertyChanged(nameof(SelectedPaperSize));
+                    }
+                }
+
+                OnPropertyChanged(nameof(PaperSizeOptions));
+                OnPropertyChanged(nameof(IsAutoCutSupported));
+                OnPropertyChanged(nameof(CanPrintTestReceipt));
+                OnPropertyChanged(nameof(IsCustomPaperWidthVisible));
+            });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogWarning(ex, "Failed to update printer settings for '{PrinterName}'", printerName);
         }
     }
 
@@ -485,51 +537,39 @@ public sealed class SettingsViewModel : ViewModelBase, IDisposable
 
     public async Task PrintTestReceiptAsync()
     {
+        if (_isPrintingTestReceipt) return;
         if (_printService == null) return;
+
+        if (string.IsNullOrWhiteSpace(_selectedPrinter) || string.Equals(_selectedPrinter, "NONE", StringComparison.OrdinalIgnoreCase))
+        {
+            ErrorMessage = _localizationService.GetString("NoPrinterSelected");
+            return;
+        }
+
         try
         {
+            _isPrintingTestReceipt = true;
+            OnPropertyChanged(nameof(CanPrintTestReceipt));
+            ErrorMessage = null;
             StatusMessage = _localizationService.GetString("GeneratingReport");
-            var sample = new DhirDhar.Application.Printing.ReceiptData
-            {
-                Type = DhirDhar.Application.Printing.ReceiptType.BorrowerReceipt,
-                BusinessName = _businessName,
-                Title = "DhirDhar POS Test Receipt",
-                Subtitle = "Financial Management System",
-                BorrowerName = "ભાર્ગવ / Bhargav",
-                BorrowerNumber = "DJ01",
-                Contact = "9876543210",
-                Village = "Ahmedabad",
-                LoanDate = DateTime.Today,
-                InitialPrincipal = 10000m,
-                InterestRate = 3.00m,
-                DisplayDuration = "12 Months",
-                MonthlyInterest = 300m,
-                CurrentPrincipal = 10000m,
-                TotalInterest = 300m,
-                TotalOutstanding = 10300m,
-                TransactionDate = DateTime.Now,
-                TransactionAmount = 10000m,
-                TransactionType = "Deposit",
-                PaperSize = _selectedPaperSize,
-                CustomPaperWidthMm = _customPaperWidthMm,
-                AutoCut = _autoCutPaperEnabled,
-                LanguageCode = _localizationService.CurrentLanguage,
-                FooterNote = "Thank You For Using DhirDhar"
-            };
 
-            var qrService = App.ServiceProvider?.GetService(typeof(DhirDhar.Application.QrCode.IQrCodeService)) as DhirDhar.Application.QrCode.IQrCodeService;
-            if (qrService != null)
-            {
-                sample.QrCodePngBytes = qrService.GeneratePngBytes("DJ01", 8);
-            }
+            await _printService.PrintTestReceiptAsync(
+                _selectedPrinter,
+                _selectedPaperSize,
+                _autoCutPaperEnabled,
+                _localizationService.CurrentLanguage);
 
-            var path = await _printService.GenerateReceiptPdfAsync(sample);
-            StatusMessage = $"{_localizationService.GetString("TestReceiptSuccess")} ({System.IO.Path.GetFileName(path)})";
+            StatusMessage = _localizationService.GetString("TestReceiptSuccess");
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Failed to print test receipt.");
             ErrorMessage = ex.Message;
+        }
+        finally
+        {
+            _isPrintingTestReceipt = false;
+            OnPropertyChanged(nameof(CanPrintTestReceipt));
         }
     }
 
@@ -713,39 +753,73 @@ public sealed class SettingsViewModel : ViewModelBase, IDisposable
     {
         try
         {
-            var defaultLabel = _localizationService?.GetString("DefaultPrinter") ?? "Default Printer";
-            var printers = await Task.Run(() =>
+            var noPrinterLabel = _localizationService?.GetString("NoPrinterAvailable") ?? "No printer available";
+            var (printerList, autoCutSupported, paperSizes, effectivePrinter) = await Task.Run(() =>
             {
-                var list = new List<PrinterOption>
+                var list = new List<PrinterOption>();
+                var installed = _printService?.GetInstalledPrinters() ?? Array.Empty<string>();
+                foreach (var p in installed)
                 {
-                    new(null, defaultLabel)
-                };
-                if (_printService != null)
-                {
-                    try
+                    if (!string.IsNullOrWhiteSpace(p))
                     {
-                        foreach (var p in _printService.GetInstalledPrinters())
-                        {
-                            if (!string.IsNullOrWhiteSpace(p))
-                            {
-                                list.Add(new(p, p));
-                            }
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        _logger.LogWarning(ex, "Could not query printer list.");
+                        list.Add(new(p, p));
                     }
                 }
-                return (IReadOnlyList<PrinterOption>)list;
+
+                if (list.Count == 0)
+                {
+                    list.Add(new("NONE", noPrinterLabel));
+                }
+
+                // Determine active printer
+                string? active = _selectedPrinter;
+                if (!string.IsNullOrWhiteSpace(active) && !installed.Any(p => string.Equals(p, active, StringComparison.OrdinalIgnoreCase)))
+                {
+                    active = null;
+                }
+
+                if (string.IsNullOrWhiteSpace(active) && installed.Count > 0)
+                {
+                    var def = _printService?.GetDefaultPrinterName();
+                    active = installed.FirstOrDefault(p => string.Equals(p, def, StringComparison.OrdinalIgnoreCase)) ?? installed[0];
+                }
+
+                bool autoCut = _printService?.IsThermalPrinter(active) ?? false;
+                var rawPaperSizes = _printService?.GetSupportedPaperSizes(active) ?? Array.Empty<DhirDhar.Application.Printing.PrinterPaperSizeInfo>();
+                var pOptions = rawPaperSizes.Select(ps => new PaperSizeOption(ps.Name, ps.DisplayLabel)).ToList();
+
+                return (list, autoCut, pOptions, active);
             }, ct).ConfigureAwait(false);
 
             if (!ct.IsCancellationRequested)
             {
                 RunOnUiThread(() =>
                 {
-                    _printerOptions = printers;
+                    _printerOptions = printerList;
+                    _isAutoCutSupported = autoCutSupported;
+                    _paperSizeOptions = paperSizes;
+
+                    if (!string.Equals(_selectedPrinter, effectivePrinter, StringComparison.OrdinalIgnoreCase))
+                    {
+                        _selectedPrinter = effectivePrinter;
+                        OnPropertyChanged(nameof(SelectedPrinter));
+                    }
+
+                    // Check if current paper size is valid for this printer
+                    if (!string.IsNullOrWhiteSpace(_selectedPaperSize) && !paperSizes.Any(p => string.Equals(p.Value, _selectedPaperSize, StringComparison.OrdinalIgnoreCase)))
+                    {
+                        if (paperSizes.Count > 0)
+                        {
+                            _selectedPaperSize = paperSizes[0].Value;
+                            OnPropertyChanged(nameof(SelectedPaperSize));
+                        }
+                    }
+
                     OnPropertyChanged(nameof(PrinterOptions));
+                    OnPropertyChanged(nameof(PaperSizeOptions));
+                    OnPropertyChanged(nameof(IsAutoCutSupported));
+                    OnPropertyChanged(nameof(CanPrintTestReceipt));
+                    OnPropertyChanged(nameof(IsCustomPaperWidthVisible));
                 });
             }
         }

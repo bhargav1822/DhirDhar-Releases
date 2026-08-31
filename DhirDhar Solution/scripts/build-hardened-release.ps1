@@ -105,7 +105,11 @@ if ($LASTEXITCODE -ne 0) {
 }
 
 # Sign installer and compute SHA-256
-$installerExe = "$installerDir\DhirDhar-2.1.1-x64-Setup.exe"
+$propsXml = [xml](Get-Content "$solutionRoot\Directory.Build.props")
+$appVersion = $propsXml.Project.PropertyGroup.Version
+if (-not $appVersion) { $appVersion = "2.1.3" }
+
+$installerExe = "$installerDir\DhirDhar-$appVersion-x64-Setup.exe"
 if (Test-Path $installerExe) {
     Write-Host "`n[SIGN INSTALLER] Signing installer package $installerExe..." -ForegroundColor Yellow
     & powershell -ExecutionPolicy Bypass -File "$solutionRoot\scripts\sign-binaries.ps1" -TargetPath "$installerExe"
@@ -115,8 +119,8 @@ if (Test-Path $installerExe) {
     $installerSha256 = (Get-FileHash -Path $installerExe -Algorithm SHA256).Hash.ToUpperInvariant()
     
     # Write checksum file
-    $sha256File = "$installerDir\DhirDhar-2.1.1-x64-Setup.exe.sha256"
-    "$installerSha256  DhirDhar-2.1.1-x64-Setup.exe" | Out-File -FilePath $sha256File -Encoding ascii -Force
+    $sha256File = "$installerDir\DhirDhar-$appVersion-x64-Setup.exe.sha256"
+    "$installerSha256  DhirDhar-$appVersion-x64-Setup.exe" | Out-File -FilePath $sha256File -Encoding ascii -Force
 
     Write-Host "  [INSTALLER READY] Path: $installerExe" -ForegroundColor Green
     Write-Host "  [INSTALLER SIZE] $installerSizeMB MB ($($installerItem.Length) bytes)" -ForegroundColor Green

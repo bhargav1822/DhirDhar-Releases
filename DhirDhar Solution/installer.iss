@@ -1,8 +1,8 @@
 ; Inno Setup Script for DhirDhar Solution
-; Produces a SINGLE self-contained production installer EXE: DhirDhar-2.1.1-x64-Setup.exe
+; Produces a SINGLE self-contained production installer EXE: DhirDhar-2.1.3-x64-Setup.exe
 
 #define MyAppName "DhirDhar Solution"
-#define MyAppVersion "2.1.1"
+#define MyAppVersion "2.1.3"
 #define MyAppPublisher "DhirDhar Solution"
 #define MyAppExeName "DhirDhar.Desktop.exe"
 #define MyAppIcon "d:\DhirDhar\DhirDhar Solution\src\DhirDhar.Desktop\Assets\AppIcon.ico"
@@ -19,7 +19,7 @@ DefaultDirName={autopf64}\{#MyAppName}
 DefaultGroupName={#MyAppName}
 AllowNoIcons=yes
 OutputDir={#MyOutputDir}
-OutputBaseFilename=DhirDhar-2.1.1-x64-Setup
+OutputBaseFilename=DhirDhar-2.1.3-x64-Setup
 SetupIconFile={#MyAppIcon}
 UninstallDisplayIcon={app}\Assets\AppIcon.ico
 Compression=lzma2/ultra64

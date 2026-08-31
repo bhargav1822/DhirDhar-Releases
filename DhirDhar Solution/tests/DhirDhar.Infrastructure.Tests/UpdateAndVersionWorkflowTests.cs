@@ -14,8 +14,10 @@ namespace DhirDhar.Infrastructure.Tests;
 public sealed class UpdateAndVersionWorkflowTests
 {
     [Fact]
-    public void Version211_IsGreaterThan_PreviousVersions()
+    public void Version213_IsGreaterThan_PreviousVersions()
     {
+        Assert.True(SemanticVersion.TryParse("2.1.3", out var v213));
+        Assert.True(SemanticVersion.TryParse("2.1.2", out var v212));
         Assert.True(SemanticVersion.TryParse("2.1.1", out var v211));
         Assert.True(SemanticVersion.TryParse("2.1.0", out var v210));
         Assert.True(SemanticVersion.TryParse("2.0.0", out var v200));
@@ -44,49 +46,51 @@ public sealed class UpdateAndVersionWorkflowTests
         Assert.True(SemanticVersion.TryParse("1.1.0", out var v110));
         Assert.True(SemanticVersion.TryParse("1.0.0", out var v100));
 
-        Assert.True(v211 > v210);
-        Assert.True(v211 > v200);
-        Assert.True(v211 > v141);
-        Assert.True(v211 > v140);
-        Assert.True(v211 > v139);
-        Assert.True(v211 > v138);
-        Assert.True(v211 > v137);
-        Assert.True(v211 > v136);
-        Assert.True(v211 > v135);
-        Assert.True(v211 > v134);
-        Assert.True(v211 > v133);
-        Assert.True(v211 > v132);
-        Assert.True(v211 > v131);
-        Assert.True(v211 > v130);
-        Assert.True(v211 > v129);
-        Assert.True(v211 > v128);
-        Assert.True(v211 > v127);
-        Assert.True(v211 > v126);
-        Assert.True(v211 > v125);
-        Assert.True(v211 > v124);
-        Assert.True(v211 > v123);
-        Assert.True(v211 > v122);
-        Assert.True(v211 > v121);
-        Assert.True(v211 > v120);
-        Assert.True(v211 > v110);
-        Assert.True(v211 > v100);
+        Assert.True(v213 > v212);
+        Assert.True(v213 > v211);
+        Assert.True(v213 > v210);
+        Assert.True(v213 > v200);
+        Assert.True(v213 > v141);
+        Assert.True(v213 > v140);
+        Assert.True(v213 > v139);
+        Assert.True(v213 > v138);
+        Assert.True(v213 > v137);
+        Assert.True(v213 > v136);
+        Assert.True(v213 > v135);
+        Assert.True(v213 > v134);
+        Assert.True(v213 > v133);
+        Assert.True(v213 > v132);
+        Assert.True(v213 > v131);
+        Assert.True(v213 > v130);
+        Assert.True(v213 > v129);
+        Assert.True(v213 > v128);
+        Assert.True(v213 > v127);
+        Assert.True(v213 > v126);
+        Assert.True(v213 > v125);
+        Assert.True(v213 > v124);
+        Assert.True(v213 > v123);
+        Assert.True(v213 > v122);
+        Assert.True(v213 > v121);
+        Assert.True(v213 > v120);
+        Assert.True(v213 > v110);
+        Assert.True(v213 > v100);
     }
 
     [Fact]
-    public void DirectoryBuildProps_DefinesVersion211()
+    public void DirectoryBuildProps_DefinesVersion213()
     {
         var propsPath = @"d:\DhirDhar\DhirDhar Solution\Directory.Build.props";
         Assert.True(File.Exists(propsPath), $"Directory.Build.props not found at {propsPath}");
 
         var content = File.ReadAllText(propsPath);
-        Assert.Contains("<Version>2.1.1</Version>", content);
-        Assert.Contains("<AssemblyVersion>2.1.1.0</AssemblyVersion>", content);
-        Assert.Contains("<FileVersion>2.1.1.0</FileVersion>", content);
-        Assert.Contains("<InformationalVersion>2.1.1</InformationalVersion>", content);
+        Assert.Contains("<Version>2.1.3</Version>", content);
+        Assert.Contains("<AssemblyVersion>2.1.3.0</AssemblyVersion>", content);
+        Assert.Contains("<FileVersion>2.1.3.0</FileVersion>", content);
+        Assert.Contains("<InformationalVersion>2.1.3</InformationalVersion>", content);
     }
 
     [Fact]
-    public void AppSettings_DefinesVersion211()
+    public void AppSettings_DefinesVersion213()
     {
         var appsettingsPath = @"d:\DhirDhar\DhirDhar Solution\src\DhirDhar.Desktop\appsettings.json";
         Assert.True(File.Exists(appsettingsPath), $"appsettings.json not found at {appsettingsPath}");
@@ -94,25 +98,25 @@ public sealed class UpdateAndVersionWorkflowTests
         var json = File.ReadAllText(appsettingsPath);
         using var doc = JsonDocument.Parse(json);
         var version = doc.RootElement.GetProperty("Application").GetProperty("Version").GetString();
-        Assert.Equal("2.1.1", version);
+        Assert.Equal("2.1.3", version);
     }
 
     [Fact]
-    public void Published_DhirDharDesktopExe_ReportsFileVersion2110()
+    public void Published_DhirDharDesktopExe_ReportsFileVersion2130()
     {
-        var exePath = @"d:\DhirDhar\DhirDhar Solution\Release\Publish\Desktop\DhirDhar.Desktop.exe";
+        var exePath = @"d:\DhirDhar\DhirDhar Solution\Release\DhirDhar.Desktop.exe";
         if (File.Exists(exePath))
         {
             var versionInfo = FileVersionInfo.GetVersionInfo(exePath);
-            Assert.Equal("2.1.1.0", versionInfo.FileVersion);
-            Assert.StartsWith("2.1.1", versionInfo.ProductVersion);
+            Assert.Equal("2.1.3.0", versionInfo.FileVersion);
+            Assert.StartsWith("2.1.3", versionInfo.ProductVersion);
         }
     }
 
     [Fact]
     public void InstallerExe_Exists_And_IsNonEmpty()
     {
-        var installerPath = @"d:\DhirDhar\DhirDhar Solution\Installer\DhirDhar-2.1.1-x64-Setup.exe";
+        var installerPath = @"d:\DhirDhar\DhirDhar Solution\Installer\DhirDhar-2.1.3-x64-Setup.exe";
         if (File.Exists(installerPath))
         {
             var fileInfo = new FileInfo(installerPath);
@@ -131,9 +135,9 @@ public sealed class UpdateAndVersionWorkflowTests
     [Fact]
     public void VersionComparison_DetectsUpdateFromPreviousVersion()
     {
-        Assert.True(SemanticVersion.TryParse("2.1.0", out var installedVersion));
-        Assert.True(SemanticVersion.TryParse("2.1.1", out var newVersion));
-        Assert.True(newVersion > installedVersion, "2.1.1 must be detected as an update over 2.1.0");
+        Assert.True(SemanticVersion.TryParse("2.1.1", out var installedVersion));
+        Assert.True(SemanticVersion.TryParse("2.1.3", out var newVersion));
+        Assert.True(newVersion > installedVersion, "2.1.3 must be detected as an update over 2.1.1");
     }
 
     [Fact]

@@ -16,6 +16,7 @@
         <converters:DigitLocalizingConverter x:Key="DigitLocalizingConverter" />
         <converters:DateTimeFormatConverter x:Key="DateTimeFormatConverter" />
         <converters:StringToVisibilityConverter x:Key="StringToVisibilityConverter" />
+        <converters:FileSizeConverter x:Key="FileSizeConverter" />
     </Page.Resources>
 
     <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
@@ -259,7 +260,7 @@
                                             <TextBlock Grid.Column="0" Text="{x:Bind BackupDate, Mode=OneTime, Converter={StaticResource DateTimeFormatConverter}, ConverterParameter=short}" FontSize="12" VerticalAlignment="Center" HorizontalAlignment="Left" />
                                             <TextBlock Grid.Column="1" Text="{x:Bind Type, Converter={StaticResource TextToLocalizedTextConverter}}" FontSize="12" VerticalAlignment="Center" HorizontalAlignment="Left" />
                                             <TextBlock Grid.Column="2" Text="{x:Bind Location}" FontSize="12" TextTrimming="CharacterEllipsis" TextWrapping="NoWrap" VerticalAlignment="Center" HorizontalAlignment="Left" ToolTipService.ToolTip="{x:Bind Location}" />
-                                            <TextBlock Grid.Column="3" Text="{x:Bind Size, Mode=OneTime, Converter={StaticResource DigitLocalizingConverter}}" FontSize="12" VerticalAlignment="Center" HorizontalAlignment="Right" />
+                                            <TextBlock Grid.Column="3" Text="{x:Bind Size, Mode=OneTime, Converter={StaticResource FileSizeConverter}}" FontSize="12" VerticalAlignment="Center" HorizontalAlignment="Right" />
                                             <TextBlock Grid.Column="4" Text="{x:Bind Status, Converter={StaticResource TextToLocalizedTextConverter}}" FontSize="12" Foreground="{ThemeResource SuccessBrush}" VerticalAlignment="Center" HorizontalAlignment="Center" />
                                             <Button Grid.Column="5" Content="Restore" Style="{StaticResource SecondaryButtonStyle}" Height="28" FontSize="11" CornerRadius="4" HorizontalAlignment="Center" VerticalAlignment="Center" Click="OnRestoreItemClick" />
                                         </Grid>

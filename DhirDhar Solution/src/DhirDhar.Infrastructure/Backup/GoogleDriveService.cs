@@ -397,7 +397,8 @@ public sealed class GoogleDriveService : IGoogleDriveService
             _lastBackupStatus = "Successful";
             NotifyStateChanged();
 
-            _logger.LogInformation("Google Drive backup uploaded & verified successfully in appDataFolder: Id={FileId}, Name={Name}, Size={Size}, SHA256={SHA256}", uploadedFile.Id, targetFileName, fileSize, sha256Hex);
+            long cloudFileSize = uploadedFile.Size ?? fileSize;
+            _logger.LogInformation("Google Drive backup uploaded & verified successfully in appDataFolder: Id={FileId}, Name={Name}, Size={Size}, SHA256={SHA256}", uploadedFile.Id, targetFileName, cloudFileSize, sha256Hex);
 
             return new BackupMetadata(
                 GoogleBackupFileName,
@@ -407,7 +408,7 @@ public sealed class GoogleDriveService : IGoogleDriveService
                 timestamp,
                 GoogleBackupType,
                 "Google Drive",
-                fileSize,
+                cloudFileSize,
                 sha256Hex,
                 "Successful",
                 "Verified");
@@ -475,7 +476,21 @@ public sealed class GoogleDriveService : IGoogleDriveService
                 _lastBackupTime = latestDate.ToString("dd-MM-yyyy hh:mm tt");
                 _lastBackupStatus = "Successful";
 
-                var fileSize = latest.Size ?? 0L;
+                long? fileSize = latest.Size;
+                if (!fileSize.HasValue && !string.IsNullOrEmpty(latest.Id))
+                {
+                    try
+                    {
+                        var metaReq = _driveService.Files.Get(latest.Id);
+                        metaReq.Fields = "id, size";
+                        var meta = await metaReq.ExecuteAsync(linkedCts.Token).ConfigureAwait(false);
+                        fileSize = meta?.Size;
+                    }
+                    catch (Exception metaEx)
+                    {
+                        _logger.LogWarning(metaEx, "Failed to fetch file size metadata for cloud backup {FileId}", latest.Id);
+                    }
+                }
 
                 // Return ONLY ONE Google Backup entry representing the single active cloud backup
                 entries.Add(new BackupHistoryEntry(

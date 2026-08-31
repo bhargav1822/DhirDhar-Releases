@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using DhirDhar.Application.Localization;
@@ -164,6 +164,37 @@ public sealed class ComprehensiveLocalizationTests
         Assert.Equal(expectedAscii, actual);
     }
 
+    [Theory]
+    [InlineData("પોતે", "en-IN", "Self")]
+    [InlineData("પોતે", "gu-IN", "પોતે")]
+    [InlineData("પોતે", "hi-IN", "स्वयं")]
+    [InlineData("પોતે", "mr-IN", "स्वतः")]
+    [InlineData("Self", "gu-IN", "પોતે")]
+    [InlineData("Self", "hi-IN", "स्वयं")]
+    [InlineData("Self", "en-IN", "Self")]
+    [InlineData("स्वयं", "en-IN", "Self")]
+    [InlineData("स्वयं", "gu-IN", "પોતે")]
+    [InlineData("નામ", "en-IN", "Name")]
+    [InlineData("નામ", "hi-IN", "नाम")]
+    [InlineData("નામ", "gu-IN", "નામ")]
+    [InlineData("Name", "gu-IN", "નામ")]
+    [InlineData("Name", "hi-IN", "नाम")]
+    [InlineData("Notes.Self", "en-IN", "Self")]
+    [InlineData("Notes.Self", "gu-IN", "પોતે")]
+    [InlineData("Notes.Self", "hi-IN", "स्वयं")]
+    [InlineData("Notes.Name", "en-IN", "Name")]
+    [InlineData("Notes.Name", "gu-IN", "નામ")]
+    [InlineData("Notes.Name", "hi-IN", "नाम")]
+    [InlineData("TXN-101 - પોતે", "en-IN", "TXN-101 - Self")]
+    [InlineData("TXN-101 - પોતે", "hi-IN", "TXN-101 - स्वयं")]
+    [InlineData("TXN-101 - પોતે", "gu-IN", "TXN-101 - પોતે")]
+    public void LocalizeText_NotesAndSelf_TranslatesAccordingToActiveLanguage(string source, string targetLang, string expected)
+    {
+        var service = new LocalizationService();
+        var actual = service.LocalizeText(source, targetLang);
+        Assert.Equal(expected, actual);
+    }
+
     [Fact]
     public void UserDataImmutability_BorrowerNamesAndIdentifiers_AreNeverModified()
     {
@@ -178,10 +209,11 @@ public sealed class ComprehensiveLocalizationTests
             Assert.Equal("DJ99", service.LocalizeText("DJ99"));
             Assert.Equal("DHIRDHAR-2026-ABCD-1234", service.LocalizeText("DHIRDHAR-2026-ABCD-1234"));
 
-            // User-entered borrower names and notes must NEVER be translated by LocalizeText
+            // User-entered borrower names and custom notes must NEVER be corrupted
             Assert.Equal("Bhargav Patel", service.LocalizeText("Bhargav Patel"));
             Assert.Equal("Ramsinh Katara", service.LocalizeText("Ramsinh Katara"));
-            Assert.Equal("Special personal loan notes", service.LocalizeText("Special personal loan notes"));
+            Assert.Equal("Special personal loan notes for business expansion", service.LocalizeText("Special personal loan notes for business expansion"));
         }
     }
 }
+

@@ -44,18 +44,31 @@ public static class PaperSizeHelper
         if (string.IsNullOrWhiteSpace(code)) return PaperSizeKind.A4;
         var clean = code.Trim().ToUpperInvariant().Replace(" ", "").Replace("-", "").Replace("_", "");
 
+        if (clean.Contains("58MM") || clean.Contains("POS58") || clean.Contains("58X") || clean.Contains("2INCH")) return PaperSizeKind.Pos58;
+        if (clean.Contains("80MM") || clean.Contains("POS80") || clean.Contains("80X") || clean.Contains("3INCH") || clean.Contains("ROLLPAPER")) return PaperSizeKind.Pos80;
+        if (clean.Contains("110MM") || clean.Contains("POS110") || clean.Contains("110X") || clean.Contains("4INCH")) return PaperSizeKind.Pos110;
+        if (clean.Contains("CUSTOM")) return PaperSizeKind.PosCustom;
+        if (clean.Contains("A5")) return PaperSizeKind.A5;
+        if (clean.Contains("LETTER")) return PaperSizeKind.Letter;
+        if (clean.Contains("A4")) return PaperSizeKind.A4;
+
         if (clean.Contains("58")) return PaperSizeKind.Pos58;
         if (clean.Contains("80")) return PaperSizeKind.Pos80;
         if (clean.Contains("110")) return PaperSizeKind.Pos110;
-        if (clean.Contains("CUSTOM")) return PaperSizeKind.PosCustom;
-        if (clean == "A5") return PaperSizeKind.A5;
-        if (clean == "LETTER") return PaperSizeKind.Letter;
+
         return PaperSizeKind.A4;
     }
 
     public static bool IsThermalPosSize(string? paperSizeCode)
     {
+        if (string.IsNullOrWhiteSpace(paperSizeCode)) return false;
         var kind = ParsePaperSizeKind(paperSizeCode);
-        return kind is PaperSizeKind.Pos58 or PaperSizeKind.Pos80 or PaperSizeKind.Pos110 or PaperSizeKind.PosCustom;
+        if (kind is PaperSizeKind.Pos58 or PaperSizeKind.Pos80 or PaperSizeKind.Pos110 or PaperSizeKind.PosCustom)
+        {
+            return true;
+        }
+
+        var upper = paperSizeCode.ToUpperInvariant();
+        return upper.Contains("ROLL") || upper.Contains("RECEIPT") || upper.Contains("POS") || upper.Contains("58MM") || upper.Contains("80MM");
     }
 }

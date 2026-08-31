@@ -58,6 +58,19 @@ public class LocalizationService : ILocalizationService
     {
         ["en-US"] = new Dictionary<string, string>
         {
+            ["NoPrinterAvailable"] = "No printer available",
+            ["NoPrinterSelected"] = "No printer selected.",
+            ["AutoCutNotSupported"] = "Auto-cut is only supported on thermal printers.",
+            ["PrintTestReceiptTitle"] = "PRINT TEST RECEIPT",
+            ["StatusPrintingOk"] = "Printing OK",
+            ["Self"] = "Self",
+            ["Notes.Self"] = "Self",
+            ["Note.Self"] = "Self",
+            ["Notes.Name"] = "Name",
+            ["Note.Name"] = "Name",
+            ["Notes"] = "Notes",
+            ["Note"] = "Note",
+            ["Pote"] = "Self",
             ["Unassigned"] = "Unassigned",
             ["SecurityAndEncryption"] = "Security & Data Encryption (E2EE)",
             ["SecurityAndEncryptionSubtitle"] = "Hardware-backed authenticated encryption (AES-256-GCM) protecting all borrowers, loans, transactions, and backups.",
@@ -734,6 +747,19 @@ public class LocalizationService : ILocalizationService
         },
         ["gu-IN"] = new Dictionary<string, string>
         {
+            ["NoPrinterAvailable"] = "કોઈ પ્રિન્ટર ઉપલબ્ધ નથી",
+            ["NoPrinterSelected"] = "કોઈ પ્રિન્ટર પસંદ કરેલ નથી.",
+            ["AutoCutNotSupported"] = "ઓટો-કટ ફક્ત થર્મલ પ્રિન્ટર પર જ સમર્થિત છે.",
+            ["PrintTestReceiptTitle"] = "ટેસ્ટ રસીદ પ્રિન્ટ",
+            ["StatusPrintingOk"] = "પ્રિન્ટિંગ સફળ",
+            ["Self"] = "પોતે",
+            ["Notes.Self"] = "પોતે",
+            ["Note.Self"] = "પોતે",
+            ["Notes.Name"] = "નામ",
+            ["Note.Name"] = "નામ",
+            ["Notes"] = "નોંધ",
+            ["Note"] = "નોંધ",
+            ["Pote"] = "પોતે",
             ["Unassigned"] = "સોંપાયેલ નથી",
             ["SecurityAndEncryption"] = "સુરક્ષા અને ડેટા એન્ક્રિપ્શન (E2EE)",
             ["SecurityAndEncryptionSubtitle"] = "હાર્ડવેર-સમર્થિત પ્રમાણિત એન્ક્રિપ્શન (AES-256-GCM) જે તમામ ધિરાણધારકો, લોન, વ્યવહારો અને બેકઅપનું રક્ષણ કરે છે.",
@@ -1406,6 +1432,19 @@ public class LocalizationService : ILocalizationService
         },
         ["hi-IN"] = new Dictionary<string, string>
         {
+            ["NoPrinterAvailable"] = "कोई प्रिंटर उपलब्ध नहीं है",
+            ["NoPrinterSelected"] = "कोई प्रिंटर चयनित नहीं है।",
+            ["AutoCutNotSupported"] = "ऑटो-कट केवल थर्मल प्रिंटर पर समर्थित है।",
+            ["PrintTestReceiptTitle"] = "टेस्ट रसीद प्रिंट",
+            ["StatusPrintingOk"] = "प्रिंटिंग ठीक",
+            ["Self"] = "स्वयं",
+            ["Notes.Self"] = "स्वयं",
+            ["Note.Self"] = "स्वयं",
+            ["Notes.Name"] = "नाम",
+            ["Note.Name"] = "नाम",
+            ["Notes"] = "नोट्स",
+            ["Note"] = "नोट",
+            ["Pote"] = "स्वयं",
             ["Unassigned"] = "असाइन नहीं किया गया",
             ["PrintingSettings"] = "प्रिंटिंग और पीओएस पेपर सेटिंग्स",
             ["PaperSize"] = "पेपर का आकार",
@@ -2037,6 +2076,19 @@ public class LocalizationService : ILocalizationService
         },
         ["mr-IN"] = new Dictionary<string, string>
         {
+            ["NoPrinterAvailable"] = "कोणतेही प्रिंटर उपलब्ध नाही",
+            ["NoPrinterSelected"] = "कोणतेही प्रिंटर निवडलेले नाही.",
+            ["AutoCutNotSupported"] = "ऑटो-कट केवळ थर्मल प्रिंटरवर समर्थित आहे.",
+            ["PrintTestReceiptTitle"] = "चाचणी पावती प्रिंट",
+            ["StatusPrintingOk"] = "प्रिंटिंग यशस्वी",
+            ["Self"] = "स्वतः",
+            ["Notes.Self"] = "स्वतः",
+            ["Note.Self"] = "स्वतः",
+            ["Notes.Name"] = "नाव",
+            ["Note.Name"] = "नाव",
+            ["Notes"] = "टीपा",
+            ["Note"] = "टीप",
+            ["Pote"] = "स्वतः",
             ["Unassigned"] = "असाइन केलेले नाही",
             ["PrintingSettings"] = "प्रिंटिंग आणि POS पेपर सेटिंग्ज",
             ["PaperSize"] = "कागदाचा आकार",
@@ -2601,6 +2653,19 @@ public class LocalizationService : ILocalizationService
         },
         ["bn-IN"] = new Dictionary<string, string>
         {
+            ["NoPrinterAvailable"] = "কোন প্রিন্টার উপলব্ধ নেই",
+            ["NoPrinterSelected"] = "কোনো প্রিন্টার নির্বাচন করা হয়নি।",
+            ["AutoCutNotSupported"] = "স্বয়ংক্রিয় কাগজ কাটা শুধুমাত্র থার্মাল প্রিন্টারে সমর্থিত।",
+            ["PrintTestReceiptTitle"] = "টেস্ট রসিদ প্রিন্ট",
+            ["StatusPrintingOk"] = "মুদ্রণ সম্পন্ন",
+            ["Self"] = "স্বয়ং",
+            ["Notes.Self"] = "স্বয়ং",
+            ["Note.Self"] = "স্বয়ং",
+            ["Notes.Name"] = "নাম",
+            ["Note.Name"] = "নাম",
+            ["Notes"] = "নোট",
+            ["Note"] = "নোট",
+            ["Pote"] = "স্বয়ং",
             ["Unassigned"] = "অর্পণ করা হয়নি",
             ["PrintingSettings"] = "মুদ্রণ এবং POS কাগজের সেটিংস",
             ["PaperSize"] = "কাগজের আকার",
@@ -3167,6 +3232,19 @@ public class LocalizationService : ILocalizationService
         },
         ["pa-IN"] = new Dictionary<string, string>
         {
+            ["NoPrinterAvailable"] = "ਕੋਈ ਪ੍ਰਿੰਟਰ ਉਪਲਬਧ ਨਹੀਂ",
+            ["NoPrinterSelected"] = "ਕੋਈ ਪ੍ਰਿੰਟਰ ਚੁਣਿਆ ਨਹੀਂ ਗਿਆ।",
+            ["AutoCutNotSupported"] = "ਆਟੋ-ਕੱਟ ਸਿਰਫ਼ ਥਰਮਲ ਪ੍ਰਿੰਟਰ 'ਤੇ ਸਮਰਥਿਤ ਹੈ।",
+            ["PrintTestReceiptTitle"] = "ਟੈਸਟ ਰਸੀਦ ਪ੍ਰਿੰਟ",
+            ["StatusPrintingOk"] = "ਪ੍ਰਿੰਟਿੰਗ ਠੀਕ",
+            ["Self"] = "ਖ਼ੁਦ",
+            ["Notes.Self"] = "ਖ਼ੁਦ",
+            ["Note.Self"] = "ਖ਼ੁਦ",
+            ["Notes.Name"] = "ਨਾਮ",
+            ["Note.Name"] = "ਨਾਮ",
+            ["Notes"] = "ਨੋਟ",
+            ["Note"] = "ਨੋਟ",
+            ["Pote"] = "ਖ਼ੁਦ",
             ["Unassigned"] = "ਨਿਰਧਾਰਤ ਨਹੀਂ",
             ["PrintingSettings"] = "ਪ੍ਰਿੰਟਿੰਗ ਅਤੇ POS ਪੇਪਰ ਸੈਟਿੰਗਾਂ",
             ["PaperSize"] = "ਪੇਪਰ ਦਾ ਆਕਾਰ",
@@ -3724,6 +3802,19 @@ public class LocalizationService : ILocalizationService
         },
         ["ta-IN"] = new Dictionary<string, string>
         {
+            ["NoPrinterAvailable"] = "அச்சுப்பொறி எதுவும் கிடைக்கவில்லை",
+            ["NoPrinterSelected"] = "எந்த அச்சுப்பொறியும் தேர்ந்தெடுக்கப்படவில்லை.",
+            ["AutoCutNotSupported"] = "தானியங்கி வெட்டுதல் தெர்மல் அச்சுப்பொறிகளில் மட்டுமே ஆதரிக்கப்படும்.",
+            ["PrintTestReceiptTitle"] = "சோதனை ரசீது அச்சு",
+            ["StatusPrintingOk"] = "அச்சிடுதல் சரி",
+            ["Self"] = "சுய",
+            ["Notes.Self"] = "சுய",
+            ["Note.Self"] = "சுய",
+            ["Notes.Name"] = "பெயர்",
+            ["Note.Name"] = "பெயர்",
+            ["Notes"] = "குறிப்புகள்",
+            ["Note"] = "குறிப்பு",
+            ["Pote"] = "சுய",
             ["Unassigned"] = "ஒதுக்கப்படவில்லை",
             ["PrintingSettings"] = "அச்சிடுதல் மற்றும் POS தாள் அமைப்புகள்",
             ["PaperSize"] = "தாள் அளவு",
@@ -4288,6 +4379,19 @@ public class LocalizationService : ILocalizationService
         },
         ["te-IN"] = new Dictionary<string, string>
         {
+            ["NoPrinterAvailable"] = "ప్రింటర్ అందుబాటులో లేదు",
+            ["NoPrinterSelected"] = "ఎలాంటి ప్రింటర్ ఎంపిక చేయబడలేదు.",
+            ["AutoCutNotSupported"] = "ఆటో-కట్ థర్మల్ ప్రింటర్లలో మాత్రమే మద్దతు ఇస్తుంది.",
+            ["PrintTestReceiptTitle"] = "టెస్ట్ రసీదు ప్రింట్",
+            ["StatusPrintingOk"] = "ప్రింటింగ్ విజయవంతం",
+            ["Self"] = "స్వయంగా",
+            ["Notes.Self"] = "స్వయంగా",
+            ["Note.Self"] = "స్వయంగా",
+            ["Notes.Name"] = "పేరు",
+            ["Note.Name"] = "పేరు",
+            ["Notes"] = "గమనికలు",
+            ["Note"] = "గమనిక",
+            ["Pote"] = "స్వయంగా",
             ["Unassigned"] = "కేటాయించబడలేదు",
             ["PrintingSettings"] = "ప్రింటింగ్ మరియు POS పేపర్ సెట్టింగ్‌లు",
             ["PaperSize"] = "పేపర్ పరిమాణం",
@@ -4850,6 +4954,19 @@ public class LocalizationService : ILocalizationService
         },
         ["kn-IN"] = new Dictionary<string, string>
         {
+            ["NoPrinterAvailable"] = "ಯಾವುದೇ ಪ್ರಿಂಟರ್ ಲಭ್ಯವಿಲ್ಲ",
+            ["NoPrinterSelected"] = "ಯಾವುದೇ ಪ್ರಿಂಟರ್ ಆಯ್ಕೆ ಮಾಡಲಾಗಿಲ್ಲ.",
+            ["AutoCutNotSupported"] = "ಆಟೋ-ಕಟ್ ಕೇವಲ ಥರ್ಮಲ್ ಪ್ರಿಂಟರ್‌ಗಳಲ್ಲಿ ಮಾತ್ರ ಬೆಂಬಲಿತವಾಗಿದೆ.",
+            ["PrintTestReceiptTitle"] = "ಪರೀಕ್ಷಾ ರಶೀದಿ ಮುದ್ರಣ",
+            ["StatusPrintingOk"] = "ಮುದ್ರಣ ಸರಿ",
+            ["Self"] = "ಸ್ವತಃ",
+            ["Notes.Self"] = "ಸ್ವತಃ",
+            ["Note.Self"] = "ಸ್ವತಃ",
+            ["Notes.Name"] = "ಹೆಸರು",
+            ["Note.Name"] = "ಹೆಸರು",
+            ["Notes"] = "ಟಿಪ್ಪಣಿಗಳು",
+            ["Note"] = "ಟಿಪ್ಪಣಿ",
+            ["Pote"] = "ಸ್ವತಃ",
             ["Unassigned"] = "ನಿಯೋಜಿಸಲಾಗಿಲ್ಲ",
             ["PrintingSettings"] = "ಮುದ್ರಣ ಮತ್ತು POS ಪೇಪರ್ ಸೆಟ್ಟಿಂಗ್‌ಗಳು",
             ["PaperSize"] = "ಪೇಪರ್ ಗಾತ್ರ",
@@ -5414,6 +5531,19 @@ public class LocalizationService : ILocalizationService
         },
         ["ml-IN"] = new Dictionary<string, string>
         {
+            ["NoPrinterAvailable"] = "പ്രിന്ററുകളൊന്നും ലഭ്യമല്ല",
+            ["NoPrinterSelected"] = "പ്രിന്ററുകളൊന്നും തിരഞ്ഞെടുത്തിട്ടില്ല.",
+            ["AutoCutNotSupported"] = "ഓട്ടോ-കട്ട് തെർമൽ പ്രിന്ററുകളിൽ മാത്രമേ ലഭ്യമാകൂ.",
+            ["PrintTestReceiptTitle"] = "ടെസ്റ്റ് രസീത് പ്രിന്റ്",
+            ["StatusPrintingOk"] = "പ്രിന്റിംഗ് ശരി",
+            ["Self"] = "സ്വന്തം",
+            ["Notes.Self"] = "സ്വന്തം",
+            ["Note.Self"] = "സ്വന്തം",
+            ["Notes.Name"] = "പേര്",
+            ["Note.Name"] = "പേര്",
+            ["Notes"] = "കുറിപ്പുകൾ",
+            ["Note"] = "കുറിപ്പ്",
+            ["Pote"] = "സ്വന്തം",
             ["Unassigned"] = "നിയോഗിച്ചിട്ടില്ല",
             ["PrintingSettings"] = "പ്രിന്റിംഗും POS പേപ്പർ ക്രമീകരണങ്ങളും",
             ["PaperSize"] = "പേപ്പർ വലുപ്പം",
@@ -5978,6 +6108,19 @@ public class LocalizationService : ILocalizationService
         },
         ["or-IN"] = new Dictionary<string, string>
         {
+            ["NoPrinterAvailable"] = "କୌଣସି ପ୍ରିଣ୍ଟର ଉପଲବ୍ଧ ନାହିଁ",
+            ["NoPrinterSelected"] = "କୌଣସି ପ୍ରିଣ୍ଟର୍ ମନୋନୀତ ହୋଇନାହିଁ।",
+            ["AutoCutNotSupported"] = "ଅଟୋ-କଟ୍ କେବଳ ଥର୍ମାଲ୍ ପ୍ରିଣ୍ଟରରେ ସମର୍ଥିତ।",
+            ["PrintTestReceiptTitle"] = "ଟେଷ୍ଟ ରସିଦ୍ ପ୍ରିଣ୍ଟ୍",
+            ["StatusPrintingOk"] = "ପ୍ରିଣ୍ଟିଙ୍ଗ୍ ଠିକ୍",
+            ["Self"] = "ନିଜେ",
+            ["Notes.Self"] = "ନିଜେ",
+            ["Note.Self"] = "ନିଜେ",
+            ["Notes.Name"] = "ନାମ",
+            ["Note.Name"] = "ନାମ",
+            ["Notes"] = "ଟିପ୍ପଣୀ",
+            ["Note"] = "ଟିପ୍ପଣୀ",
+            ["Pote"] = "ନିଜେ",
             ["Unassigned"] = "ନ୍ୟସ୍ତ କରାଯାଇ ନାହିଁ",
             ["PrintingSettings"] = "ମୁଦ୍ରଣ ଏବଂ POS କାଗଜ ସେଟିଙ୍ଗ୍",
             ["PaperSize"] = "କାଗଜ ଆକାର",
@@ -6542,6 +6685,19 @@ public class LocalizationService : ILocalizationService
         },
         ["as-IN"] = new Dictionary<string, string>
         {
+            ["NoPrinterAvailable"] = "কোনো প্ৰিণ্টাৰ উপলব্ধ নহয়",
+            ["NoPrinterSelected"] = "কোনো প্ৰিণ্টাৰ নিৰ্বাচিত হোৱা নাই।",
+            ["AutoCutNotSupported"] = "অটো-কাট কেৱল থাৰ্মেল প্ৰিণ্টাৰতহে সমৰ্থিত।",
+            ["PrintTestReceiptTitle"] = "টেষ্ট ৰচিদ প্ৰিণ্ট",
+            ["StatusPrintingOk"] = "প্ৰিণ্টিং ঠিক",
+            ["Self"] = "নিজে",
+            ["Notes.Self"] = "নিজে",
+            ["Note.Self"] = "নিজে",
+            ["Notes.Name"] = "নাম",
+            ["Note.Name"] = "নাম",
+            ["Notes"] = "টোকা",
+            ["Note"] = "টোকা",
+            ["Pote"] = "নিজে",
             ["Unassigned"] = "নিয়োগ কৰা হোৱা নাই",
             ["PrintingSettings"] = "মুদ্ৰণ আৰু POS কাগজৰ ছেটিংছ",
             ["PaperSize"] = "কাগজৰ আকাৰ",
@@ -7177,6 +7333,38 @@ public class LocalizationService : ILocalizationService
             _resources["en-IN"] = enUsDict;
         }
 
+        // Canonical priority reverse mappings for note/relation keywords
+        _reverseTextToKeyMap["Self"] = "Self";
+        _reverseTextToKeyMap["પોતે"] = "Self";
+        _reverseTextToKeyMap["Pote"] = "Self";
+        _reverseTextToKeyMap["स्वयं"] = "Self";
+        _reverseTextToKeyMap["स्वतः"] = "Self";
+        _reverseTextToKeyMap["স্বয়ং"] = "Self";
+        _reverseTextToKeyMap["ਖ਼ੁਦ"] = "Self";
+        _reverseTextToKeyMap["சுய"] = "Self";
+        _reverseTextToKeyMap["స్వయంగా"] = "Self";
+        _reverseTextToKeyMap["ಸ್ವತಃ"] = "Self";
+        _reverseTextToKeyMap["സ്വന്തം"] = "Self";
+        _reverseTextToKeyMap["ନିଜେ"] = "Self";
+        _reverseTextToKeyMap["নিজে"] = "Self";
+
+        _reverseTextToKeyMap["Name"] = "Name";
+        _reverseTextToKeyMap["નામ"] = "Name";
+        _reverseTextToKeyMap["नाम"] = "Name";
+        _reverseTextToKeyMap["नाव"] = "Name";
+        _reverseTextToKeyMap["নাম"] = "Name";
+        _reverseTextToKeyMap["ਨਾਮ"] = "Name";
+        _reverseTextToKeyMap["பெயர்"] = "Name";
+        _reverseTextToKeyMap["పేరు"] = "Name";
+        _reverseTextToKeyMap["ಹೆಸರು"] = "Name";
+        _reverseTextToKeyMap["പേര്"] = "Name";
+
+        _reverseTextToKeyMap["Notes"] = "Notes";
+        _reverseTextToKeyMap["Note"] = "Note";
+        _reverseTextToKeyMap["નોંધ"] = "Notes";
+        _reverseTextToKeyMap["नोट"] = "Note";
+        _reverseTextToKeyMap["नोट्स"] = "Notes";
+
         foreach (var langPair in _resources)
         {
             foreach (var kvp in langPair.Value)
@@ -7393,7 +7581,7 @@ public class LocalizationService : ILocalizationService
         if (_reverseTextToKeyMap.TryGetValue(trimmed, out var mappedKey))
         {
             var localizedFromKey = GetString(mappedKey, lang);
-            if (!string.IsNullOrWhiteSpace(localizedFromKey) && !string.Equals(localizedFromKey, mappedKey, StringComparison.OrdinalIgnoreCase))
+            if (!string.IsNullOrWhiteSpace(localizedFromKey))
             {
                 return localizedFromKey;
             }
@@ -7452,6 +7640,39 @@ public class LocalizationService : ILocalizationService
                 "as" => $"{localizedType} লেনদেন",
                 _ => $"{txnType} transaction"
             };
+        }
+
+        // 4. Check composite text with common delimiters (" - ", " / ", ": ", " • ", " | ")
+        if (trimmed.Contains(" - ") || trimmed.Contains(" / ") || trimmed.Contains(" : ") || trimmed.Contains(": ") || trimmed.Contains(" • ") || trimmed.Contains(" | "))
+        {
+            var delimiters = new[] { " - ", " / ", " : ", ": ", " • ", " | " };
+            foreach (var delimiter in delimiters)
+            {
+                if (trimmed.Contains(delimiter))
+                {
+                    var parts = trimmed.Split(new[] { delimiter }, StringSplitOptions.None);
+                    bool anyTranslated = false;
+                    var translatedParts = new string[parts.Length];
+                    for (int i = 0; i < parts.Length; i++)
+                    {
+                        var part = parts[i].Trim();
+                        var locPart = LocalizeText(part, lang);
+                        if (!string.Equals(locPart, part, StringComparison.Ordinal))
+                        {
+                            anyTranslated = true;
+                            translatedParts[i] = locPart;
+                        }
+                        else
+                        {
+                            translatedParts[i] = parts[i];
+                        }
+                    }
+                    if (anyTranslated)
+                    {
+                        return string.Join(delimiter, translatedParts);
+                    }
+                }
+            }
         }
 
         return trimmed;

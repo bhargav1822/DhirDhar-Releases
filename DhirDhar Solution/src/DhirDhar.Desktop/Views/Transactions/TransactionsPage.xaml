@@ -15,6 +15,7 @@
         <converters:InverseBoolToVisibilityConverter x:Key="InverseBoolToVisibilityConverter" />
         <converters:StatusToBrushConverter x:Key="StatusToBrushConverter" />
         <converters:DigitLocalizingConverter x:Key="DigitLocalizingConverter" />
+        <converters:TextToLocalizedTextConverter x:Key="TextToLocalizedTextConverter" />
 
         <Style x:Key="TableListViewItemStyle" TargetType="ListViewItem">
             <Setter Property="Padding" Value="12,0" />
@@ -301,7 +302,7 @@
                                             </Border>
 
                                             <!-- Description -->
-                                            <TextBlock Grid.Column="3" Text="{x:Bind Description}" FontSize="12" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" Foreground="{ThemeResource SubtleForegroundBrush}" />
+                                            <TextBlock Grid.Column="3" Text="{x:Bind Description, Converter={StaticResource TextToLocalizedTextConverter}}" FontSize="12" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" Foreground="{ThemeResource SubtleForegroundBrush}" />
 
                                             <!-- Amount -->
                                             <TextBlock Grid.Column="4" Text="{x:Bind FormattedAmount}" FontSize="13" FontWeight="Bold" HorizontalAlignment="Right" VerticalAlignment="Center" Foreground="{x:Bind SemanticBrushKey, Converter={StaticResource StatusToBrushConverter}}" TextTrimming="CharacterEllipsis" />
