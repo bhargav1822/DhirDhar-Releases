@@ -1,6 +1,6 @@
-# DhirDhar - Official Windows Application Releases
+# DhirDhar
 
-Welcome to the official release and distribution repository for the **DhirDhar Windows Desktop Application**.
+Official Windows application releases and distribution repository for **DhirDhar**.
 
 ---
 
@@ -10,18 +10,18 @@ Download the latest production installer for DhirDhar directly from [GitHub Rele
 
 | Version | Release Type | Installer Package | Architecture |
 | :--- | :--- | :--- | :--- |
-| **Latest** | Production | `DhirDhar_Setup_v*.exe` | Windows x64 |
+| **v2.1.3** | Production | `DhirDhar-2.1.3-x64-Setup.exe` | Windows x64 |
 
-To browse all historical releases and change notes, visit the [Releases Archive](https://github.com/bhargav1822/DhirDhar-Releases/releases).
+To browse all historical releases and release notes, visit the [Releases Archive](https://github.com/bhargav1822/DhirDhar-Releases/releases).
 
 ---
 
-## 🚀 Live Automatic Updates
+## 🚀 Automatic Updates
 
 DhirDhar includes a built-in background update service:
-- Checks for newly published stable releases automatically.
+- Automatically checks for newly published stable releases.
 - Verifies package integrity and SHA-256 cryptographic signatures.
-- Applies updates seamlessly with zero manual re-installation.
+- Applies updates seamlessly without requiring manual reinstallation.
 
 ---
 
@@ -29,7 +29,7 @@ DhirDhar includes a built-in background update service:
 
 - **Operating System:** Windows 10 (version 1809 or higher) or Windows 11 (64-bit)
 - **Architecture:** x64
-- **Runtime:** Included with self-contained installer
+- **Runtime:** Self-contained (no external .NET installation required)
 
 ---
 

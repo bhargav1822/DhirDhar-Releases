@@ -1,13 +1,43 @@
-# Build results
+# =============================================================================
+# DhirDhar Release Repository (.gitignore)
+# Policy: RELEASES ONLY - NO SOURCE CODE, NO PROJECT FILES, NO BUILD ARTIFACTS
+# =============================================================================
+
+# Prevent Source Code and Solution Directories
+DhirDhar Solution/
+src/
+tests/
+scripts/
+tools/
+packages/
+Packages/
+icons/
+
+# Build Outputs and Intermediate Files
 [Bb]in/
 [Oo]bj/
 Release/
 Release_Obfuscated/
 Publish/
-Packages/
+Installer/
 TestResults/
+artifacts/
 
-# User-specific files & IDE
+# .NET / C# / XAML Source and Project Files
+*.cs
+*.xaml
+*.csproj
+*.sln
+*.slnx
+*.props
+*.targets
+*.iss
+*.manifest
+*.resw
+*.resx
+*.pri
+
+# User-specific files & IDE configuration
 .vs/
 .vscode/
 .idea/
@@ -15,8 +45,9 @@ TestResults/
 *.suo
 *.userosscache
 *.sln.docstates
+*.userprefs
 
-# Database & User Data
+# Database, Backups, and User Data
 *.db
 *.db-shm
 *.db-wal
@@ -24,13 +55,17 @@ TestResults/
 *.sqlite3
 *.bak
 
-# Logs and temporary files
+# Logs, Diagnostics, and Temporary Files
 *.log
 *.tmp
 *.temp
+*.binlog
+*.trx
+*.txt
+*.backup
 update.log
 
-# Certificates and keys
+# Certificates, Secrets, and Credentials
 *.pfx
 *.p12
 *.key
@@ -38,8 +73,10 @@ update.log
 *.cer
 *.crt
 *client_secrets.json
-publish_release.py
+app_integrity.sig
 
-# Inno Setup output (built locally)
-Installer/
-DhirDhar Solution/Installer/
+# Node / Scratch scripts
+node_modules/
+package.json
+package-lock.json
+*.py

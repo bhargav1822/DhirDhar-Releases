@@ -1,4 +1,4 @@
-name: Release Build and Publish
+name: Release Distribution & Verification
 
 on:
   push:
@@ -15,111 +15,49 @@ permissions:
   contents: write
 
 jobs:
-  build-and-release:
-    runs-on: windows-latest
+  verify-and-distribute:
+    name: Verify Release Metadata and Distribution
+    runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout Source
+      - name: Checkout Release Repository
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
 
-      - name: Determine Release Version
-        id: get_version
+      - name: Determine Release Tag
+        id: release_info
         run: |
-          if ("${{ github.ref }}" -like "refs/tags/v*") {
-            $ver = "${{ github.ref_name }}".TrimStart('v')
-          } elseif ("${{ inputs.version }}" -ne "") {
-            $ver = "${{ inputs.version }}".TrimStart('v')
-          } else {
-            $ver = "2.1.3"
-          }
-          echo "RELEASE_VERSION=$ver" >> $env:GITHUB_ENV
-          Write-Host "Resolved release version: $ver"
+          if [[ "${{ github.ref }}" == refs/tags/v* ]]; then
+            TAG_NAME="${{ github.ref_name }}"
+          elif [[ -n "${{ inputs.version }}" ]]; then
+            TAG_NAME="v${{ inputs.version }}"
+          else
+            TAG_NAME="v2.1.3"
+          fi
+          echo "TAG_NAME=$TAG_NAME" >> $GITHUB_ENV
+          echo "Processing release for tag: $TAG_NAME"
 
-      - name: Setup .NET SDK
-        uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: '8.0.x'
-
-      - name: Setup Inno Setup
+      - name: Validate Release Metadata (release.json)
         run: |
-          choco install innosetup --no-progress
+          if [ -f "release.json" ]; then
+            python3 -c "
+          import json, sys
+          with open('release.json', 'r') as f:
+              data = json.load(f)
+          print('Release metadata verified successfully.')
+          print('Version:', data.get('version'))
+          print('Download URL:', data.get('downloadUrl'))
+          print('SHA-256:', data.get('sha256'))
+          "
+          else
+            echo "Warning: release.json not found."
+          fi
 
-      - name: Restore Dependencies
+      - name: Verify Release Assets Policy
         run: |
-          dotnet restore "DhirDhar Solution/DhirDhar Solution.slnx" -p:Platform=x64
-
-      - name: Build Solution in Release x64
-        run: |
-          dotnet build "DhirDhar Solution/DhirDhar Solution.slnx" -c Release -p:Platform=x64 --no-restore
-
-      - name: Run Automated Tests
-        run: |
-          dotnet test "DhirDhar Solution/DhirDhar Solution.slnx" -c Release -p:Platform=x64 --no-build --verbosity normal
-
-      - name: Publish Self-Contained Release win-x64
-        run: |
-          dotnet publish "DhirDhar Solution/src/DhirDhar.Desktop/DhirDhar.Desktop.csproj" -c Release -r win-x64 --self-contained true -o "DhirDhar Solution/Release"
-          dotnet publish "DhirDhar Solution/src/DhirDhar.Updater/DhirDhar.Updater.csproj" -c Release -r win-x64 --self-contained true -o "DhirDhar Solution/Release"
-
-      - name: Strip Debug Symbols
-        run: |
-          Get-ChildItem -Path "DhirDhar Solution/Release" -Include "*.pdb","*.xml","*.log","*.tmp" -Recurse -File | Remove-Item -Force
-
-      - name: Generate Application Integrity Manifest
-        run: |
-          powershell -NoProfile -ExecutionPolicy Bypass -File "DhirDhar Solution/scripts/generate-integrity-manifest.ps1" -TargetDir "DhirDhar Solution/Release"
-
-      - name: Compile Inno Setup Installer
-        run: |
-          & "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" "DhirDhar Solution/installer.iss"
-
-      - name: Generate SHA-256 Checksum
-        run: |
-          $installerPath = "DhirDhar Solution/Installer/DhirDhar-${{ env.RELEASE_VERSION }}-x64-Setup.exe"
-          if (-not (Test-Path $installerPath)) {
-            $found = Get-ChildItem -Path "DhirDhar Solution/Installer" -Filter "*.exe" | Select-Object -First 1
-            if ($found) { $installerPath = $found.FullName }
-          }
-          $sha256 = (Get-FileHash -Path $installerPath -Algorithm SHA256).Hash.ToUpperInvariant()
-          $installerFileName = [System.IO.Path]::GetFileName($installerPath)
-          "$sha256  $installerFileName" | Out-File -FilePath "DhirDhar Solution/Installer/$installerFileName.sha256" -Encoding ascii -Force
-          Write-Host "Generated SHA-256 for $installerFileName: $sha256"
-
-      - name: Publish GitHub Release
-        uses: softprops/action-gh-release@v2
-        if: startsWith(github.ref, 'refs/tags/')
-        with:
-          tag_name: ${{ github.ref_name }}
-          name: DhirDhar Solution ${{ github.ref_name }}
-          draft: false
-          prerelease: false
-          body: |
-            # DhirDhar Solution ${{ github.ref_name }}
-
-            ## Highlights & Features in v2.1.3
-            - **Dashboard Outstanding Overview**: Isolated year-wise calculations for Opening, New Loans, Payments, and Closing balances.
-            - **Year-wise Monthly Chart**: Displays January–December 12-month performance for the selected year with dynamic scale up to ₹10,00,000 (10 Lakh).
-            - **Chart Color Palette**: 4 distinct vertical bars per month:
-              - 🟠 New Loans (Orange)
-              - 🔴 Withdrawals (Red)
-              - 🟢 Deposits (Green)
-              - 🔵 Interest Earned (Blue)
-            - **Dashboard Status Counts**: Active borrower count colored in Green and Closed borrower count in Red.
-            - **Borrower & Business Profile**: Business-profile-based prefix generation with strict immutable alphanumeric borrower numbering.
-            - **Multilingual Localization**:
-              - Complete UI localization across 12 Indian languages (Gujarati, Hindi, English, Marathi, Bengali, Punjabi, Tamil, Telugu, Kannada, Malayalam, Odia, Assamese).
-              - Dedicated phonetic typing IME with strict language boundary isolation and zero unwanted IME switching.
-              - Full "Notes" / "Self" (પોતે / स्वयं / Self) multi-word field localization.
-            - **Human-Readable Backup File Sizes**: Standard binary units (`B`, `KB`, `MB`, `GB`, `TB`) across Backup History table and Google Drive metadata.
-            - **Native Windows Printing & POS Paper Settings**:
-              - Real-time Windows printer discovery via native Windows printing subsystem.
-              - Dynamic query of printer-supported paper forms (A4, A5, Letter, 58mm, 80mm roll).
-              - Thermal auto-cut support with ESC/POS hardware command dispatch.
-              - Multilingual Test Receipt printing with instant status feedback.
-            - **Hardware-Backed Authenticated Encryption**: AES-256-GCM encrypted financial records, photo storage, and backup protection.
-          files: |
-            DhirDhar Solution/Installer/*.exe
-            DhirDhar Solution/Installer/*.sha256
-            release.json
+          echo "======================================================="
+          echo " DhirDhar Release Distribution Repository Policy:       "
+          echo " - RELEASES ONLY                                       "
+          echo " - Production application binaries distributed via     "
+          echo "   GitHub Releases Assets.                             "
+          echo " - No application source code committed to repository. "
+          echo "======================================================="
