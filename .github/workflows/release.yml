@@ -61,3 +61,11 @@ jobs:
           echo "   GitHub Releases Assets.                             "
           echo " - No application source code committed to repository. "
           echo "======================================================="
+
+      - name: Enforce Source Code Isolation
+        run: |
+          if [ -d "DhirDhar Solution" ] || [ -d "src" ] || [ -d "tests" ]; then
+            echo "ERROR: Application source code directories detected in release distribution repository!"
+            exit 1
+          fi
+          echo "Source code isolation confirmed: No source code present on branch."

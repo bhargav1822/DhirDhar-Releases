@@ -2,6 +2,12 @@
 # DhirDhar Repository (.gitignore)
 # =============================================================================
 
+# Application Source Code (Isolated from Release-Only Distribution Repository)
+DhirDhar Solution/
+src/
+tests/
+docs/
+
 # Build Outputs and Intermediate Files
 [Bb]in/
 [Oo]bj/
