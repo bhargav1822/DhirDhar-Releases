@@ -10,7 +10,7 @@ Download the latest production installer for DhirDhar directly from [GitHub Rele
 
 | Version | Release Type | Installer Package | Architecture |
 | :--- | :--- | :--- | :--- |
-| **v2.1.5** | Production | `DhirDhar-2.1.5-x64-Setup.exe` | Windows x64 |
+| **v3.0.0** | Production | `DhirDhar-3.0.0-x64-Setup.exe` | Windows x64 |
 
 To browse all historical releases and release notes, visit the [Releases Archive](https://github.com/bhargav1822/DhirDhar-Releases/releases).
 

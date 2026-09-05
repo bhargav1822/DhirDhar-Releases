@@ -17,6 +17,8 @@ Publish/
 Installer/
 TestResults/
 artifacts/
+*-Setup.exe
+*.sha256
 
 # User-specific files & IDE configuration
 .vs/
@@ -53,6 +55,7 @@ update.log
 *client_secrets.json
 app_integrity.sig
 
-# Node / Scratch scripts
+# Node / Scratch scripts / Tools
 node_modules/
 package-lock.json
+tools/
