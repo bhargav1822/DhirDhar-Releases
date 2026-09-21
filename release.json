@@ -1,8 +1,8 @@
 ﻿{
-    "version":  "3.5.1",
-    "name":  "DhirDhar v3.5.1",
-    "releaseDate":  "2026-09-06",
-    "downloadUrl":  "https://github.com/bhargav1822/DhirDhar-Releases/releases/download/v3.5.1/DhirDhar-3.5.1-x64-Setup.exe",
-    "sha256":  "323FF3423F6996D99606374FDD337717D3F0D94ADAD25384D369FAB646E52058",
-    "changelog":  "DhirDhar v3.5.1 Release Notes:\n\n### Outsource \u0026 Capital Improvements\n- Capital Details Date Synchronization: Unified Capital Date and Interest Date into a single intuitive date picker. Selected Capital Date automatically synchronizes and persists as the Interest Date for seamless interest calculation.\n- Table Layout \u0026 Action Button Visibility: Resolved Action column clipping on the Outsource Added Borrowers table. Edit and Delete action buttons are fully visible and accessible within table boundaries.\n\n### Core Stability \u0026 Verification\n- Enterprise Hardened Production Installer: Packaged as a single self-contained installer (DhirDhar-3.5.1-x64-Setup.exe) with LZMA2 ultra-compression.\n- Strict Financial \u0026 Engine Integrity: Zero modifications to core calculation logic, interest engine, and transaction processing.\n- 1,707 Automated Tests Passing: Full test suite verified with 100% pass rate across Domain, Application, and Infrastructure layers."
+    "version":  "3.6.0",
+    "name":  "DhirDhar 3.6.0",
+    "releaseDate":  "2026-09-21",
+    "downloadUrl":  "https://github.com/bhargav1822/DhirDhar-Releases/releases/download/v3.6.0/DhirDhar-3.6.0-x64-Setup.exe",
+    "sha256":  "A3194C18EA204D9963B1BF432B755673C4517E1C80429925E905AC98202C2325",
+    "changelog":  "DhirDhar 3.6.0 Release Notes:\n\n### Outsource Management \u0026 Multi-Party Visibility\n- Multiple Outsource Parties Display: The Outsource overview displays all actual registered parties stored in the database as individual party cards.\n- Dedicated Party Profile Navigation: Clicking \u0027View\u0027 seamlessly navigates to each individual party\u0027s profile, capital bundles, and financial statement.\n\n### Outsource Capital Allocation Safeguards\n- Remove Borrower from Capital Allocation: Inside each expanded capital bundle, linked borrowers can be unlinked from that specific outsource capital allocation only.\n- Absolute Borrower Data Safety: Removing an outsourced borrower unlinks only the outsource relationship. The borrower is NEVER deleted from the main Borrowers database.\n- Complete Historical Preservation: Borrower profile, photos, loans, main ledger/history, transactions, and unrelated allocations remain 100% intact.\n\n### Core Verification\n- Enterprise Hardened Production Installer: Packaged as a single self-contained installer (DhirDhar-3.6.0-x64-Setup.exe) with LZMA2 ultra-compression.\n- 1,904 Automated Tests Passing: Full test suite verified with 100% pass rate across Domain, Application, and Infrastructure layers."
 }
